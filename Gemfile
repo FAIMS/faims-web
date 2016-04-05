@@ -25,7 +25,7 @@ group :development, :test do
   gem 'factory_girl_rails'
 
   # cucumber gems
-  gem 'cucumber'
+  gem 'cucumber', '>=1.3.18'
   gem 'capybara'
   gem 'database_cleaner'
   gem 'launchy' # So you can do Then show me the page
