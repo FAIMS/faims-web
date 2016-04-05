@@ -68,3 +68,11 @@ Capybara.match = :prefer_exact
 
 FileManager::LOCK_TIMEOUT = 1
 
+# Due to webdriver not being currently available as a signed Firefox extension
+# and Firefox automatically disabling unsigned extensions
+# Use Chrome for now
+Capybara.register_driver :chrome do |app|
+  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+end
+
+Capybara.javascript_driver = :chrome
