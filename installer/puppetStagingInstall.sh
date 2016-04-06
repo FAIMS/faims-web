@@ -28,7 +28,7 @@ fi
 
 # Clone webapp
 if [ ! -d "$APP_ROOT" ]; then
-    sudo git clone https://github.com/FAIMS/faims-web.git $APP_ROOT
+    sudo git clone --depth 1 https://github.com/FAIMS/faims-web.git $APP_ROOT
     sudo chown -R $USER:$USER $APP_ROOT
     cd $APP_ROOT && git checkout master
 fi
