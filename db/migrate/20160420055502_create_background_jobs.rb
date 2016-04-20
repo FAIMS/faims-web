@@ -7,6 +7,7 @@ class CreateBackgroundJobs < ActiveRecord::Migration
       t.string :job_type
       t.references :user
       t.string :module_name
+      t.references :delayed_job
 
       t.timestamps
     end

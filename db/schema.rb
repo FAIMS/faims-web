@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(:version => 20160420055502) do
     t.string   "job_type"
     t.integer  "user_id"
     t.string   "module_name"
+    t.integer  "delayed_job_id"
     t.datetime "created_at",          :null => false
     t.datetime "updated_at",          :null => false
   end
