@@ -11,7 +11,22 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140522025319) do
+ActiveRecord::Schema.define(:version => 20160420055502) do
+
+  create_table "background_jobs", :force => true do |t|
+    t.string   "status"
+    t.integer  "project_module_id"
+    t.integer  "project_exporter_id"
+    t.string   "job_type"
+    t.integer  "user_id"
+    t.string   "module_name"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
+  end
+
+  add_index "background_jobs", ["project_exporter_id"], :name => "index_background_jobs_on_project_exporter_id"
+  add_index "background_jobs", ["project_module_id"], :name => "index_background_jobs_on_project_module_id"
+  add_index "background_jobs", ["user_id"], :name => "index_background_jobs_on_user_id"
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
