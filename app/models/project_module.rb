@@ -855,17 +855,24 @@ class ProjectModule < ActiveRecord::Base
   # background job hooks
 
   def enqueue(job)
-    bj = BackgroundJob.new
+    bj = BackgroundJob.where(:delayed_job_id => job.id).first_or_create
     bj.status = 'Pending'
     bj.project_module = self
     #bj.user = current_user
+    Rails.logger.warn job.handler.inspect
+    method_name = YAML.load(job.handler).method_name.to_s
+    if method_name == 'archive_project_module'
+      bj.job_type = 'Archive Module'
+    elsif method_name == 'export_project_module'
+      #TODO determine exporter used and associate with job
+      bj.job_type = 'Export Module'
+    else
+      bj.job_type = 'Unknown'
+    end
     bj.module_name = self.name
     bj.delayed_job = job
     bj.save
   end
-
-#  def perform
-#  end
 
   def before(job)
     bj = BackgroundJob.where(:delayed_job_id => job.id).last
@@ -897,5 +904,57 @@ class ProjectModule < ActiveRecord::Base
     bj.status = 'Failed'
     bj.failure_message = job.last_error
     bj.save
+  end
+
+  # instance-less version
+
+  ModuleUploadJob = Struct.new(:file, :tmpfile, :current_user) do
+    def enqueue(job)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).first_or_create
+      bj.status = 'Pending'
+      bj.project_module = nil
+      bj.user = current_user
+      bj.job_type = "Upload Module"
+      bj.module_name = file
+      bj.delayed_job = job
+      bj.save
+    end
+
+    def perform
+      Rails.logger.warn file.inspect
+      ProjectModule.upload_project_module(tmpfile, current_user)
+    end
+
+    def before(job)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).last
+      bj.status = 'Running'
+      bj.save
+    end
+
+    def after(job)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).last
+      bj.status = 'Finished'
+      bj.save
+    end
+
+    def success(job)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).last
+      bj.status = 'Finished Successfully'
+      bj.save
+    end
+
+    def error(job, exception)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).last
+      bj.status = 'Failed'
+      bj.failure_message = exception.message
+      bj.save
+    end
+
+    def failure(job)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).last
+      bj.status = 'Failed'
+      bj.failure_message = job.last_error
+      bj.save
+    end
   end
 end

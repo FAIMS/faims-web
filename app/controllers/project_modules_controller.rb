@@ -8,9 +8,9 @@ class ProjectModulesController < ProjectModuleBaseController
 
   def new
     page_crumbs :pages_home, :project_modules_index, :project_modules_create
-    
+
     @project_module = ProjectModule.new
-    
+
     @spatial_list = Database.get_spatial_ref_list
 
     create_project_module_tmp_dir
@@ -20,7 +20,7 @@ class ProjectModulesController < ProjectModuleBaseController
     page_crumbs :pages_home, :project_modules_index, :project_modules_create
 
     @project_module = ProjectModule.new
-    
+
     @spatial_list = Database.get_spatial_ref_list
 
     parse_settings_from_params(params)
@@ -50,7 +50,7 @@ class ProjectModulesController < ProjectModuleBaseController
       ensure
         FileUtils.remove_entry_secure @tmpdir
       end
-      
+
       redirect_to :project_modules
     else
       flash.now[:error] = 'Please correct the errors in this form.'
@@ -231,8 +231,9 @@ class ProjectModulesController < ProjectModuleBaseController
     end
 
     if params[:project_module]
-      project_module = ProjectModule.upload_project_module(params[:project_module][:project_module_file].tempfile.to_path.to_s, current_user)
-      flash[:notice] = project_module.upgraded ? 'Module has been successfully upgraded from Faims 1.3 to Faims 2.0.' : 'Module has been successfully uploaded.'
+      Delayed::Job.enqueue ProjectModule::ModuleUploadJob.new(params[:project_module][:project_module_file].original_filename, params[:project_module][:project_module_file].tempfile.to_path.to_s, current_user)
+      #project_module = ProjectModule.upload_project_module(params[:project_module][:project_module_file].tempfile.to_path.to_s, current_user)
+      #flash[:notice] = project_module.upgraded ? 'Module has been successfully upgraded from Faims 1.3 to Faims 2.0.' : 'Module has been successfully uploaded.'
       redirect_to :project_modules
     else
       flash.now[:error] = 'Please upload an archive of the module.'
@@ -322,7 +323,7 @@ class ProjectModulesController < ProjectModuleBaseController
   def download_attached_file
     safe_send_file safe_root_join("modules/#{ProjectModule.find(params[:id]).key}/#{params[:path]}"), :filename => params[:name]
   end
-  
+
   private
 
   def create_project_module_tmp_dir
@@ -347,7 +348,7 @@ class ProjectModulesController < ProjectModuleBaseController
     validate_arch16n(tmpdir)
     validate_validation_schema(tmpdir)
     validate_css_style(tmpdir)
-    
+
     @project_module.errors.empty?
   end
 
@@ -405,7 +406,7 @@ class ProjectModulesController < ProjectModuleBaseController
   def create_temp_file(filename, upload, tmpdir)
     if filename == @project_module.get_name(:properties)
       create_arch16n_files(upload, tmpdir)
-      return 
+      return
     end
 
     File.open(upload.tempfile, 'r') do |upload_file|
