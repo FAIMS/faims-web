@@ -6,7 +6,24 @@
     %tr
       %th.span1 No.
       %th.span2 Module
+      %th.span2 Job type
+      %th.span2 User
+      %th.span2 Status
+      %th.span2 
+      %th.span2 Last Updated
       - for job in @jobs
         %tr
           %td.span1
-          = job.id
+            = job.id
+          %td.span2
+            = job.module_name
+          %td.span2
+            FIXME: Job type
+          %td.span2
+            FIXME: User
+          %td.span2
+            = job.status
+          %td.span2
+            FIXME: Link/action
+          %td.span2
+            = job.updated_at.localtime.strftime("%d/%m/%Y %I:%M%p")
