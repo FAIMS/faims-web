@@ -8,7 +8,7 @@ class CreateBackgroundJobs < ActiveRecord::Migration
       t.references :user
       t.string :module_name
       t.references :delayed_job
-
+      t.string :failure_message
       t.timestamps
     end
     add_index :background_jobs, :project_module_id
