@@ -120,6 +120,9 @@ FaimsWeb::Application.routes.draw do
   #get 'project_exporter/:key', :to => 'project_exporter#show', :as => 'project_exporter'
   post 'project_exporter/:key/delete', :to => 'project_exporter#delete', :as => 'delete_project_exporter'
 
+  # background jobs
+  get 'jobs', :to => 'jobs#index', :as => 'jobs'
+
   # android api
   get 'android/modules', :to => 'android#project_modules', :as => 'android_project_modules'
 

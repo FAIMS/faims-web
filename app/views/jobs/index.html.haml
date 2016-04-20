@@ -1,0 +1,12 @@
+- title "Background Jobs"
+= breadcrumbs
+.clear
+- if @jobs
+  %table.table#jobs
+    %tr
+      %th.span1 No.
+      %th.span2 Module
+      - for job in @jobs
+        %tr
+          %td.span1
+          = job.id
