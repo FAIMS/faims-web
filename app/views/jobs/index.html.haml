@@ -24,6 +24,17 @@
           %td.span2
             = job.status
           %td.span2
-            FIXME: Link/action
+            - if job.status == 'Failed'
+              = job.failure_message.split("\n")[0]
+            - elsif job.status == 'Finished'
+              - if job.job_type == "Archive Module"
+                %a{ :href => url_for(:controller => :project_modules, :action => :download_project_module, :id => job.project_module_id)}
+                  = job.module_name + ".tar.bz2"
+                - if job.project_module.package_mgr.has_changes?
+                  %br
+                  (out dated)
+              - elsif job.job_type == "Export Module"
+                %a{ :href => url_for(:controller => :project_modules, :action => :show_export_results, :id => job.project_module_id)}
+                  (export file name goes here)
           %td.span2
             = job.updated_at.localtime.strftime("%d/%m/%Y %I:%M%p")

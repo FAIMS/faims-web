@@ -234,7 +234,7 @@ class ProjectModulesController < ProjectModuleBaseController
       Delayed::Job.enqueue ProjectModule::ModuleUploadJob.new(params[:project_module][:project_module_file].original_filename, params[:project_module][:project_module_file].tempfile.to_path.to_s, current_user)
       #project_module = ProjectModule.upload_project_module(params[:project_module][:project_module_file].tempfile.to_path.to_s, current_user)
       #flash[:notice] = project_module.upgraded ? 'Module has been successfully upgraded from Faims 1.3 to Faims 2.0.' : 'Module has been successfully uploaded.'
-      redirect_to :project_modules
+      redirect_to url_for(:controller => :jobs, :action => :index)
     else
       flash.now[:error] = 'Please upload an archive of the module.'
       render 'upload_project_module'
@@ -266,6 +266,8 @@ class ProjectModulesController < ProjectModuleBaseController
     Dir.mkdir(download_dir)
     markup_file = File.open(File.join("/tmp", "export_markup_" + SecureRandom.uuid), "w+").path
 
+    # TODO change the reliance on session here, generate path and file names deterministically
+    # so they can be retrieved by background jobs
     session[:export_download] = download_dir
     session[:export_markup] = markup_file
 

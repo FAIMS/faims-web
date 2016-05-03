@@ -73,7 +73,8 @@ show_archive_modal_dialog = ->
             $('#loading').dialog('destroy')
             window.location = data.url
           else if data.result == "waiting"
-            setTimeout (-> check_archive(data.jobid)), 5000
+            window.location = "/jobs"
+            # setTimeout (-> check_archive(data.jobid)), 5000
           else
             $('#loading').addClass('hidden')
             $('#loading').dialog('destroy')
@@ -132,6 +133,8 @@ show_export_modal_dialog = ->
           if data.result == "success" || data.result == "failure"
             window.location = data.url
           else if data.result == "waiting"
+            # TODO change this when module exports are stored in deterministic location
+            # window.location = "/jobs"
             setTimeout (-> check_export(data.jobid)), 5000
           else
             alert("Error trying to export module. Please refresh page")
@@ -944,7 +947,7 @@ upload_file = (button) ->
             $('#uploading_files').addClass('hidden')
             should_save = true
             autosave_indicator()
-        
+
         $('.attr_file').trigger("reset")
         $('#attribute-file-upload').find('#attr_file_attribute_id').val("")
         $(this).dialog('close');
