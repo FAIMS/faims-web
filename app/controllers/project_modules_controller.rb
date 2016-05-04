@@ -321,14 +321,15 @@ class ProjectModulesController < ProjectModuleBaseController
 
   def download_export_file
     @project_module = ProjectModule.find(params[:id])
-    project_export = ProjectModuleExport.where( :uuid => params[:uuid] ).first
-    download_dir = File.join(@project_module.get_path(:tmp_dir), "download_export_" + project_export.uuid)
+    if project_export = ProjectModuleExport.where( :uuid => params[:uuid] ).first
+      download_dir = File.join(@project_module.get_path(:tmp_dir), "download_export_" + project_export.uuid)
 
-    if download_dir.present? and File.exist? download_dir and File.directory? download_dir
-      download_file = (Dir.entries(download_dir) - %w{ . .. }).first
-      if download_file.present?
-        send_file File.join(download_dir, download_file), :filename => download_file
-        return
+      if download_dir.present? and File.exist? download_dir and File.directory? download_dir
+        download_file = (Dir.entries(download_dir) - %w{ . .. }).first
+        if download_file.present?
+          send_file File.join(download_dir, download_file), :filename => download_file
+          return
+        end
       end
     end
     flash[:error] = 'Export file does not exist'
