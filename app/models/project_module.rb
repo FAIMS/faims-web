@@ -857,11 +857,13 @@ class ProjectModule < ActiveRecord::Base
   # background job hooks
 
   def enqueue(job)
-    bj = BackgroundJob.where(:delayed_job_id => job.id).first_or_create
-    bj.status = 'Pending'
-    bj.project_module = self
-    #bj.user = current_user
-    Rails.logger.warn job.handler.inspect
+    bj = BackgroundJob.where(:delayed_job_id => job.id).first_or_create(
+      :status => 'Pending',
+      :project_module => self,
+      :module_name => self.name,
+      :delayed_job => job,
+      :job_type => 'Unknown'
+    )
     method_name = YAML.load(job.handler).method_name.to_s
     if method_name == 'archive_project_module'
       bj.job_type = 'Archive Module'
@@ -872,11 +874,7 @@ class ProjectModule < ActiveRecord::Base
         project_export.save
       end
       bj.job_type = 'Export Module'
-    else
-      bj.job_type = 'Unknown'
     end
-    bj.module_name = self.name
-    bj.delayed_job = job
     bj.save
   end
 
@@ -916,14 +914,15 @@ class ProjectModule < ActiveRecord::Base
 
   ModuleUploadJob = Struct.new(:file, :tmpfile, :current_user) do
     def enqueue(job)
-      bj = BackgroundJob.where(:delayed_job_id => job.id).first_or_create
-      bj.status = 'Pending'
-      bj.project_module = nil
-      bj.user = current_user
-      bj.job_type = "Upload Module"
-      bj.module_name = file
-      bj.delayed_job = job
-      bj.save
+      bj = BackgroundJob.where(:delayed_job_id => job.id).first_or_create(
+        :status => 'Pending',
+        :project_module => nil,
+        #:user => current_user,
+        :job_type => "Upload Module",
+        :module_name => file,
+        :delayed_job => job
+      )
+      #bj.save
     end
 
     def perform

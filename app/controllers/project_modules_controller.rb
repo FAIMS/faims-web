@@ -291,8 +291,12 @@ class ProjectModulesController < ProjectModuleBaseController
   def show_export_results
     page_crumbs :pages_home, :project_modules_index, :project_modules_show, :project_modules_export, :project_modules_export_results
 
-
     project_export = ProjectModuleExport.where( :uuid => params[:uuid] ).first
+    
+    if project_export.blank?
+      flash[:error] = "Failed to export module"
+      redirect_to export_project_module_path(@project_module) and return
+    end
 
     markup_file = File.open(File.join(@project_module.get_path(:tmp_dir), "export_markup_" + project_export.uuid), "r").path
 
