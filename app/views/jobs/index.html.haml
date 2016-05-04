@@ -24,7 +24,7 @@
                 = job.module_name
             - else
               = job.module_name
-          %td.span2
+          %td.span4
             = job.job_type
             - if job.job_type == "Export Module"
               - if !export.blank?
@@ -34,13 +34,19 @@
                 - if !options.blank?
                   %br
                   Options:
-                  %br
-                  - for k,v in options
-                    = "#{k} #{v}"
-                    %br
-          %td.span2
+                  %table
+                    - for key,values in options
+                      %tr
+                        %td
+                          = key
+                        %td
+                          = values.blank? ? "(blank)" : nil
+                          - for value in values
+                            = value.blank? ? "(nil)" : value
+                            %br
+          %td.span1
             = job.status
-          %td.span2
+          %td.span1
             - if job.status == 'Failed'
               = job.failure_message.split("\n")[0]
             - elsif job.status == 'Finished'
@@ -56,5 +62,5 @@
                     Exporter results
                 - else
                   (outdated)
-          %td.span2
+          %td.span1
             = job.updated_at.localtime.strftime("%d/%m/%Y %I:%M%p")
