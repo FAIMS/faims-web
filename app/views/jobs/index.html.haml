@@ -1,5 +1,7 @@
 - title "Background Jobs"
 = breadcrumbs
+.well
+  = link_to "<i class='icon-refresh'></i> Refresh".html_safe, jobs_path, :class => "btn"
 .clear
 - if @jobs
   %table.table#jobs
@@ -7,9 +9,8 @@
       %th.span1 No.
       %th.span2 Module / File name
       %th.span2 Job type
-      -# %th.span2 User
       %th.span2 Status
-      %th.span2
+      %th.span2 Output
       %th.span2 Last Updated
       - for job in @jobs
         %tr
@@ -23,8 +24,6 @@
               = job.module_name
           %td.span2
             = job.job_type
-          -# %td.span2
-          -#   = (job.user.first_name + " " + job.user.last_name) unless job.user == nil
           %td.span2
             = job.status
           %td.span2
