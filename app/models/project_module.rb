@@ -77,6 +77,7 @@ class ProjectModule < ActiveRecord::Base
 
   validates :key, :presence => true, :uniqueness => true
 
+  has_many :project_module_exports
   # Custom Validations
 
   def validate_validation_schema(schema)
@@ -825,7 +826,8 @@ class ProjectModule < ActiveRecord::Base
 
   # Export project module helpers
 
-  def export_project_module(exporter, input, download_dir, markup_file)
+  def export_project_module(exporter, input, download_dir, markup_file, project_export_id)
+    @project_export = ProjectModuleExport.find(project_export_id)
     input_json = File.open(File.join("/tmp", "input_" + SecureRandom.uuid + ".json"), "w+")
     input_json.write(input.to_json)
     input_json.close
@@ -864,7 +866,11 @@ class ProjectModule < ActiveRecord::Base
     if method_name == 'archive_project_module'
       bj.job_type = 'Archive Module'
     elsif method_name == 'export_project_module'
-      #TODO determine exporter used and associate with job
+      project_export = ProjectModuleExport.find(YAML.load(job.handler).args[4].to_i)
+      if !project_export.blank?
+        project_export.background_job = bj
+        project_export.save
+      end
       bj.job_type = 'Export Module'
     else
       bj.job_type = 'Unknown'
