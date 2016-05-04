@@ -5,4 +5,5 @@ class BackgroundJob < ActiveRecord::Base
   belongs_to :user
   attr_accessible :job_type, :module_name, :status
   default_scope order: 'updated_at DESC'
+  has_one :project_module_exports
 end

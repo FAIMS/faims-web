@@ -133,9 +133,8 @@ show_export_modal_dialog = ->
           if data.result == "success" || data.result == "failure"
             window.location = data.url
           else if data.result == "waiting"
-            # TODO change this when module exports are stored in deterministic location
-            # window.location = "/jobs"
-            setTimeout (-> check_export(data.jobid)), 5000
+            window.location = "/jobs"
+            #setTimeout (-> check_export(data.jobid)), 5000
           else
             alert("Error trying to export module. Please refresh page")
           return
