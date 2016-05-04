@@ -13,6 +13,8 @@
       %th.span2 Output
       %th.span2 Last Updated
       - for job in @jobs
+        - if job.job_type == "Export Module"
+          - export = ProjectModuleExport.where(:background_job_id => job.id).first
         %tr
           %td.span1
             = job.id
@@ -24,6 +26,18 @@
               = job.module_name
           %td.span2
             = job.job_type
+            - if job.job_type == "Export Module"
+              - if !export.blank?
+                %br
+                = "Exporter: #{ProjectExporter.find_by_key(export.exporter).name}"
+                - options = JSON.parse(export.options)
+                - if !options.blank?
+                  %br
+                  Options:
+                  %br
+                  - for k,v in options
+                    = "#{k} #{v}"
+                    %br
           %td.span2
             = job.status
           %td.span2
@@ -37,9 +51,10 @@
                   %br
                   (outdated)
               - elsif job.job_type == "Export Module"
-                - export = ProjectModuleExport.where(:background_job_id => job.id).first
                 - if !export.blank?
                   %a{ :href => url_for(:controller => :project_modules, :action => :show_export_results, :id => job.project_module_id, :uuid => export.uuid, :code => 1)}
-                    Exported file
+                    Exporter results
+                - else
+                  (outdated)
           %td.span2
             = job.updated_at.localtime.strftime("%d/%m/%Y %I:%M%p")
