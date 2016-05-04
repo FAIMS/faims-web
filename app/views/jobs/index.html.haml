@@ -17,7 +17,11 @@
           %td.span1
             = job.id
           %td.span2
-            = job.module_name
+            - if job.project_module
+              %a.project_module{href:project_module_path(job.project_module)}
+                = job.module_name
+            - else
+              = job.module_name
           %td.span2
             = job.job_type
           %td.span2
@@ -34,6 +38,6 @@
                   (out dated)
               - elsif job.job_type == "Export Module"
                 %a{ :href => url_for(:controller => :project_modules, :action => :show_export_results, :id => job.project_module_id)}
-                  (export file name goes here)
-          %td.span2
-            = job.updated_at.localtime.strftime("%d/%m/%Y %I:%M%p")
+                  Results
+          %td.span2 
+            = job.updated_at.localtime.strftime("%d/%m/%Y %I:%M%p") 
