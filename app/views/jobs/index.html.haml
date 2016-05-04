@@ -1,5 +1,7 @@
 - title "Background Jobs"
 = breadcrumbs
+.well
+  = link_to "<i class='icon-refresh'></i> Refresh".html_safe, jobs_path, :class => "btn"
 .clear
 - if @jobs
   %table.table#jobs
