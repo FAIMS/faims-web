@@ -868,7 +868,8 @@ class ProjectModule < ActiveRecord::Base
     if method_name == 'archive_project_module'
       bj.job_type = 'Archive Module'
     elsif method_name == 'export_project_module'
-      project_export = ProjectModuleExport.find(YAML.load(job.handler).args[4].to_i)
+      args = YAML.load(job.handler).args
+      project_export = ProjectModuleExport.where(:project_module_id => self, :exporter => args[0].key, :options => args[1].to_json).first
       if !project_export.blank?
         project_export.background_job = bj
         project_export.save
