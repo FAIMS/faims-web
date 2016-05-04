@@ -35,11 +35,11 @@
                   = job.module_name + ".tar.bz2"
                 - if job.project_module.package_mgr.has_changes?
                   %br
-                  (out dated)
+                  (outdated)
               - elsif job.job_type == "Export Module"
                 - export = ProjectModuleExport.where(:background_job_id => job.id).first
                 - if !export.blank?
                   %a{ :href => url_for(:controller => :project_modules, :action => :show_export_results, :id => job.project_module_id, :uuid => export.uuid, :code => 1)}
-                    (export file name goes here)
+                    Exported file
           %td.span2
             = job.updated_at.localtime.strftime("%d/%m/%Y %I:%M%p")
