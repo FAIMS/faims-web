@@ -28,7 +28,16 @@ Feature: Export project module
     And I fill in "Name" with "Steve"
     And I check "Hello"
     And I press "Export" within the exporter interface 
+    And I follow "Jobs"
+    Then I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status  | Output  |
+      | 1   | Module 1            | Export Module | Pending |         |
     And I process delayed jobs
+    And I refresh page
+    Then I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output        |
+      | 1   | Module 1            | Export Module | Finished | Exported file |
+    And I follow "Exported file"
     Then I should be on the export module results page for Module 1
     And I should see "Output"
     And I should see "Name is Steve"
