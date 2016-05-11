@@ -28,16 +28,16 @@ Feature: Export project module
     And I fill in "Name" with "Steve"
     And I check "Hello"
     And I press "Export" within the exporter interface 
-    And I follow "Jobs"
+    And I follow "background-jobs-tab"
     Then I should see "jobs" table with
-      | No. | Module / File name  | Job type      | Status  | Output  |
-      | 1   | Module 1            | Export Module | Pending |         |
+      | No. | Module / File name  | Job type                                                                           | Status  |
+      | 1   | Module 1            | Export Module using "Interface Test" with options: Name Steve Text Hello State ACT | Pending |
     And I process delayed jobs
     And I refresh page
     Then I should see "jobs" table with
-      | No. | Module / File name  | Job type      | Status   | Output        |
-      | 1   | Module 1            | Export Module | Finished | Exported file |
-    And I follow "Exported file"
+      | No. | Module / File name  | Job type                                                                           | Status   | Output           |
+      | 1   | Module 1            | Export Module using "Interface Test" with options: Name Steve Text Hello State ACT | Finished | Exporter results |
+    And I follow "Exporter results"
     Then I should be on the export module results page for Module 1
     And I should see "Output"
     And I should see "Name is Steve"
@@ -59,7 +59,17 @@ Feature: Export project module
     And I select "Exporter 1" from "select_exporter"
     And I should see "No interface to display for this exporter"
     And I press "Export" within the exporter interface
+    And I follow "background-jobs-tab"
+    Then I should see "jobs" table with
+      | No. | Module / File name  | Job type                         | Status  | Output  |
+      | 1   | Module 1            | Export Module using "Exporter 1" | Pending |         |
     And I process delayed jobs
+    And I refresh page
+    Then I should see "jobs" table with
+      | No. | Module / File name  | Job type                         | Status   | Output           |
+      | 1   | Module 1            | Export Module using "Exporter 1" | Finished | Exporter results |
+    And I follow "Exporter results"
+    Then I should be on the export module results page for Module 1
     Then I should see "Module Contents"
     And I should see "faims.properties"
     And I should see "db.sqlite"
@@ -76,8 +86,15 @@ Feature: Export project module
     And I follow "Export Module"
     And I select "Failing Exporter" from "select_exporter"
     And I press "Export" within the exporter interface 
+    And I follow "background-jobs-tab"
+    Then I should see "jobs" table with
+      | No. | Module / File name  | Job type                               | Status  | Output  |
+      | 1   | Module 1            | Export Module using "Failing Exporter" | Pending |         |
     And I process delayed jobs
-    Then I should see "Failed to export module"
+    And I refresh page
+    Then I should see "jobs" table with
+      | No. | Module / File name  | Job type                               | Status  | Output                   |
+      | 1   | Module 1            | Export Module using "Failing Exporter" | Failed  | Failed to export module. |
 
   @javascript
   Scenario: Exporter with required field

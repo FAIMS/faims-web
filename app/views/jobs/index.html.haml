@@ -28,22 +28,23 @@
             = job.job_type
             - if job.job_type == "Export Module"
               - if !export.blank?
-                %br
-                = "Exporter: #{ProjectExporter.find_by_key(export.exporter).name}"
+                = " using \"#{ProjectExporter.find_by_key(export.exporter).name}\""
                 - options = JSON.parse(export.options)
                 - if !options.blank?
+                  with options:
                   %br
-                  Options:
-                  %table
-                    - for key,values in options
-                      %tr
-                        %td
-                          = key
-                        %td
-                          = values.blank? ? "(blank)" : nil
-                          - for value in values
-                            = value.blank? ? "(nil)" : value
-                            %br
+                  - for key,values in options
+                    %span{ :class => "label label-info" }
+                      #{key}
+                    = values.blank? ? "(blank)" : nil
+                    - if values.is_a?(Array)
+                      - if values.compact.any?
+                        = values.compact.join(', ')
+                      - else
+                        (nil)
+                    - else
+                      = values.blank? ? "(nil)" : values
+                    %br
           %td.span1
             = job.status
           %td.span1
