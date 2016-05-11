@@ -25,7 +25,16 @@ Feature: Search entities
     And I follow "Upload Module"
     And I pick file "module.tar.bz2" for "Module File"
     And I press "Upload"
-    Then I should see "Module has been successfully uploaded"
+    Then I should be on the jobs page
+    And I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output |
+      | 1   | module.tar.bz2      | Upload Module | Pending  |        |
+    Then I process delayed jobs
+    And I refresh page
+    And I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output |
+      | 1   | module.tar.bz2      | Upload Module | Finished |        |
+    Then I follow "modules-tab"
     And I should be on the project modules page
     And I can find project module files for "Simple Project"
 
@@ -35,6 +44,17 @@ Feature: Search entities
     And I follow "Upload Module"
     And I pick file "GraveStone1.tar.bz2" for "Module File"
     And I press "Upload"
-    Then I should see "Module has been successfully upgraded from Faims 1.3 to Faims 2.0"
+    # Old flash message was:
+    # Then I should see "Module has been successfully upgraded from Faims 1.3 to Faims 2.0"
+    Then I should be on the jobs page
+    And I should see "jobs" table with
+      | No. | Module / File name       | Job type      | Status   | Output |
+      | 1   | GraveStone1.tar.bz2      | Upload Module | Pending  |        |
+    Then I process delayed jobs
+    And I refresh page
+    And I should see "jobs" table with
+      | No. | Module / File name       | Job type      | Status   | Output |
+      | 1   | GraveStone1.tar.bz2      | Upload Module | Finished |        |
+    Then I follow "modules-tab"
     And I should be on the project modules page
     And I can find project module files for "GraveStone1"
