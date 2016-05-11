@@ -16,8 +16,8 @@ Migrate aentreln table
 */
 
 -- Migrate user table
-REPLACE INTO db_to.User (UserID, FName, LName, Email)
-  SELECT UserID, FName, LName, Email
+REPLACE INTO db_to.User (UserID, FName, LName, Email, Password)
+  SELECT UserID, FName, LName, Email, Password
   FROM db_from.User;
 
 -- Migrate version table

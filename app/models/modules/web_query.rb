@@ -443,11 +443,11 @@ EOF
   def self.get_related_arch_entities_include_deleted
     cleanup_query(<<EOF
 SELECT uuid, relationshipid, aenttypename || ' ' || coalesce(participatesverb, 'in') || ' '|| relntypename||': '||response, deletedaentreln
-FROM latestNonDeletedArchEntFormattedIdentifiers 
-JOIN (select uuid, relationshipid, participatesverb, deleted as deletedaentreln, aentrelntimestamp from aentreln group by uuid, relationshipid having max(aentrelntimestamp)) using (uuid) 
-join relationship using (relationshipid) 
+FROM latestNonDeletedArchEntFormattedIdentifiers
+JOIN (select uuid, relationshipid, participatesverb, deleted as deletedaentreln, aentrelntimestamp from aentreln group by uuid, relationshipid having max(aentrelntimestamp)) using (uuid)
+join relationship using (relationshipid)
 join relntype using (relntypeid)
-where relationshipid in (select relationshipid 
+where relationshipid in (select relationshipid
                          from aentreln
                         where uuid = :uuid
                        )
@@ -473,8 +473,8 @@ EOF
 
   def self.merge_copy_arch_entity_relationships
     cleanup_query(<<EOF
-insert into aentreln (UUID, RelationshipID, UserID,  ParticipatesVerb, Deleted, VersionNum, isDirty, isDirtyReason, isForked, ParentTimestamp) 
-  select :mergeuuid, RelationshipID, UserID, ParticipatesVerb, Deleted, VersionNum, isDirty, isDirtyReason, isForked, ParentTimestamp 
+insert into aentreln (UUID, RelationshipID, UserID,  ParticipatesVerb, Deleted, VersionNum, isDirty, isDirtyReason, isForked, ParentTimestamp)
+  select :mergeuuid, RelationshipID, UserID, ParticipatesVerb, Deleted, VersionNum, isDirty, isDirtyReason, isForked, ParentTimestamp
   from latestnondeletedaentreln
   where uuid = :deleteuuid;
 EOF
@@ -1422,7 +1422,7 @@ insert or replace into archentity (
    except
    select uuid, aenttimestamp, userid, doi, aenttypeid, deleted, #{version} , isforked, parenttimestamp, geospatialcolumntype, geospatialcolumn
    from main.archentity;
- 
+
  insert or replace into aentvalue (
           uuid, valuetimestamp, userid, attributeid, vocabid, freetext, measure, certainty, deleted, versionnum, isforked, parenttimestamp)
    select uuid, valuetimestamp, userid, attributeid, vocabid, freetext, measure, certainty, deleted, #{version} , a.isforked, parenttimestamp
@@ -1434,7 +1434,7 @@ insert or replace into archentity (
    except
    select uuid, valuetimestamp, userid, attributeid, vocabid, freetext, measure, certainty, deleted, #{version} , isforked, parenttimestamp
    from main.aentvalue;
- 
+
  insert or replace into relationship (
           relationshipid, userid, relntimestamp, relntypeid, deleted, versionnum, isforked, parenttimestamp, geospatialcolumntype, geospatialcolumn)
    select relationshipid, userid, relntimestamp, relntypeid, deleted, #{version} , a.isforked, parenttimestamp, geospatialcolumntype, geospatialcolumn
@@ -1446,8 +1446,8 @@ insert or replace into archentity (
    except
    select relationshipid, userid, relntimestamp, relntypeid, deleted, #{version} , isforked, parenttimestamp, geospatialcolumntype, geospatialcolumn
    from main.relationship;
- 
- 
+
+
  insert or replace into relnvalue (
           relationshipid, relnvaluetimestamp, userid, attributeid, vocabid, freetext, certainty, deleted, versionnum, isforked, parenttimestamp)
    select relationshipid, relnvaluetimestamp, userid, attributeid, vocabid, freetext, certainty, deleted, #{version} , a.isforked, parenttimestamp
@@ -1459,8 +1459,8 @@ insert or replace into archentity (
    except
    select relationshipid, relnvaluetimestamp, userid, attributeid, vocabid, freetext, certainty, deleted, #{version} , isforked, parenttimestamp
    from main.relnvalue;
- 
- 
+
+
  insert or replace into aentreln (
           uuid, relationshipid, userid, aentrelntimestamp, participatesverb, deleted, versionnum, isforked, parenttimestamp)
    select uuid, relationshipid, userid, aentrelntimestamp, participatesverb, deleted, #{version} , a.isforked, parenttimestamp
@@ -1473,6 +1473,10 @@ insert or replace into archentity (
    select uuid, relationshipid, userid, aentrelntimestamp, participatesverb, deleted, #{version} , isforked, parenttimestamp
    from main.aentreln;
 
+   insert or replace into user (
+   				         userid, fname, lname, email, UserDeleted, Password)
+   				  select userid, fname, lname, email, UserDeleted, Password
+   				  from import.user;
 
 update version set ismerged = 1 where versionnum = #{version};
 
@@ -1517,14 +1521,14 @@ EOF
     )
   end
 
-  def self.get_arch_entity_type 
+  def self.get_arch_entity_type
     cleanup_query(<<EOF
 select aenttypename from archentity join aenttype using (aenttypeid) where uuid = ?;
 EOF
     )
   end
 
-  def self.get_relationship_type 
+  def self.get_relationship_type
     cleanup_query(<<EOF
 select relntypename from relationship join relntype using (relntypeid) where relationshipid = ?;
 EOF
