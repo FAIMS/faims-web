@@ -5,6 +5,6 @@ class JobsController < ApplicationController
 
   def index
     page_crumbs :pages_home, :jobs_index
-    @jobs = BackgroundJob.limit(25)
+    @jobs = BackgroundJob.where("job_type != 'Unknown'").limit(25)
   end
 end
