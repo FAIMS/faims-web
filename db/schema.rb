@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160504011604) do
+ActiveRecord::Schema.define(:version => 20160513020328) do
 
   create_table "background_jobs", :force => true do |t|
     t.string   "status"
@@ -87,6 +87,17 @@ ActiveRecord::Schema.define(:version => 20160504011604) do
     t.integer "role_id"
     t.integer "permission_id"
   end
+
+  create_table "user_modules", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "project_module_id"
+    t.text     "password"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  add_index "user_modules", ["project_module_id"], :name => "index_user_modules_on_project_module_id"
+  add_index "user_modules", ["user_id"], :name => "index_user_modules_on_user_id"
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "", :null => false

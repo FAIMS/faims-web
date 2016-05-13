@@ -78,6 +78,8 @@ class ProjectModule < ActiveRecord::Base
   validates :key, :presence => true, :uniqueness => true
 
   has_many :project_module_exports
+  has_many :user_modules
+  has_many :users, :through => :user_modules
   # Custom Validations
 
   def validate_validation_schema(schema)
