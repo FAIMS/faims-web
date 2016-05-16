@@ -1644,6 +1644,13 @@ EOF
     )
   end
 
+  def self.update_list_of_users_with_password
+    cleanup_query(<<EOF
+    replace into user (userid, fname, lname, email, password, userdeleted) select (select userid from user where email = :email), :firstname, :lastname, :email, :password, null;
+EOF
+    )
+  end
+
   def self.remove_user
     cleanup_query(<<EOF
 update user set userdeleted = 'true' where userid = ?;

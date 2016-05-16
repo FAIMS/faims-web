@@ -144,6 +144,9 @@ FaimsWeb::Application.routes.draw do
   get 'android/module/:key/app_file_download', :to => 'android#app_file_download', :as => 'android_app_file_download'
   post 'android/module/:key/app_file_upload', :to => 'android#app_file_upload', :as => 'android_app_file_upload'
 
+  get 'android/module/:key/signup', :to => 'android#user_signup', :as => 'android_user_signup'
+  post 'android/module/:key/signup', :to => 'android#user_signup', :as => 'android_user_signup'
+
   get 'thumbnail', :to => 'project_module_entity#thumbnail', :as => 'thumbnail'
 
   # server
