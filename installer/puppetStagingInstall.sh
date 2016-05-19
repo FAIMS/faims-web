@@ -11,7 +11,7 @@ APP_ROOT=/var/www/faims
 sudo apt-get update
 
 # Install common packages
-sudo apt-get -y install git puppet libreadline-dev
+sudo apt-get -y install git puppet libreadline-dev python-software-properties
 
 # Install puppet modules
 if [ ! -d "$HOME/.puppet/modules/stdlib" ]; then
