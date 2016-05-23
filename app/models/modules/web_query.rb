@@ -1407,8 +1407,8 @@ EOF
     )
   end
 
-  def self.merge_database(fromDB, version)
-    cleanup_query(<<EOF
+  def self.merge_database(fromDB, version, hasPassword)
+    result = "
 attach database '#{fromDB}' as import;
 
 insert or replace into archentity (
@@ -1473,16 +1473,22 @@ insert or replace into archentity (
    select uuid, relationshipid, userid, aentrelntimestamp, participatesverb, deleted, #{version} , isforked, parenttimestamp
    from main.aentreln;
 
-   insert or replace into user (
-   				         userid, fname, lname, email, UserDeleted, Password)
+   "
+   if hasPassword then
+     result += "insert or replace into user (
+   		      userid, fname, lname, email, UserDeleted, Password)
    				  select userid, fname, lname, email, UserDeleted, Password
-   				  from import.user;
+   				  from import.user;"
+  else
+      result += "insert or replace into user (
+    	        userid, fname, lname, email, UserDeleted)
+    				  select userid, fname, lname, email, UserDeleted
+    				  from import.user;"
+  end
+  result += "update version set ismerged = 1 where versionnum = #{version};
 
-update version set ismerged = 1 where versionnum = #{version};
-
-detach database import;
-EOF
-    )
+detach database import;"
+    cleanup_query(result)
   end
 
   def self.create_full_database(toDB)
@@ -1579,6 +1585,13 @@ SELECT relationshipid, relnvaluetimestamp, attributeid
     LEFT OUTER JOIN vocabulary USING (vocabid, attributeid)
    WHERE relnvalue.deleted is NULL and versionnum = ?
 ORDER BY relationshipid, attributename asc;
+EOF
+    )
+  end
+
+  def self.has_password_column
+    cleanup_query(<<EOF
+SELECT sql like '%Password%' FROM sqlite_master WHERE tbl_name='User';
 EOF
     )
   end

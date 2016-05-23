@@ -943,7 +943,20 @@ class Database
   end
 
   def merge_database(fromDB, version)
-    @db.execute_batch(WebQuery.merge_database(fromDB, version))
+    puts "MERGE DATABASE"
+    hasPassword = false
+    result = @db.execute(WebQuery.has_password_column)
+    result.each do |row|
+      if row[0].to_s == "1"
+        puts "debug: db has password column"
+        hasPassword = true
+      else
+        puts "debug: db does not have password column"
+        hasPassword = false
+      end
+    end
+
+    @db.execute_batch(WebQuery.merge_database(fromDB, version, hasPassword))
     validate_records
   end
 
