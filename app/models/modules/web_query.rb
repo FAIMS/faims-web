@@ -32,6 +32,20 @@ EOF
     )
   end
 
+  def self.total_latest_non_deleted_relationships
+    cleanup_query(<<EOF
+select count(*) from latestNonDeletedRelationship;
+EOF
+  )
+  end
+  
+  def self.total_arch_entities
+    cleanup_query(<<EOF
+select count(*) from ArchEntity;
+EOF
+    )
+  end
+
   def self.total_search_arch_entity
     cleanup_query(<<EOF
 select count(uuid)

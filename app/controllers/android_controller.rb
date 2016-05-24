@@ -37,6 +37,12 @@ class AndroidController < ApplicationController
     render :json => { message: 'bad request' }.to_json, :status => 400
   end
 
+  def db_record_count
+    entities = @project_module.db.total_arch_entities()
+    relationships = @project_module.db.total_latest_non_deleted_relationships()
+    render :json => { entities: entities, relationships: relationships }.to_json, :status => 200
+  end
+
   def db_info
     version = params[:version]
     version = version.blank? ? nil : version.to_i
