@@ -42,12 +42,12 @@ class Database
     @db.transaction do |db|
       db.execute(WebQuery.insert_version, current_timestamp, userid)
       params = {
-          firstname:user.first_name,
-          lastname:user.last_name,
-          email:user.email,
+          firstname: user.first_name,
+          lastname: user.last_name,
+          email: user.email,
           #TODO better handling of this on a per-module basis, perhaps
           #password: user.user_modules(:project_id => @project_module).last.password || nil
-          password: user.user_modules.last.password || nil
+          password: user.user_modules.last ? user.user_modules.last.password : nil
       }
       begin
         db.execute(WebQuery.update_list_of_users_with_password, params)
