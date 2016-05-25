@@ -138,6 +138,12 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     @user.assign_attributes(params[:user])
     if @user.valid?
+      for user_module in UserModule.where(:user_id => @user)
+        project_module = ProjectModule.find(user_module.project_module_id)
+        project_module.db.update_list_of_users(@user, @user.email)
+      end
+    end
+    if @user.valid?
       @user.save
       flash[:notice] = "Account details have been successfully updated."
       redirect_to users_path
