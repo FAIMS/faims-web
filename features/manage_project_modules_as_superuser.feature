@@ -1,10 +1,7 @@
-Feature: Manage project modules as a superuser
+Feature: Manage project modules
   In order manage project modules
   As a user
   I want to list, create and edit project modules
-
-  # Note! Most of these steps are duplicated in manage_project_modules_as_user.feature
-  # with the exception of differences in user permissions
 
   Background:
     And I have role "superuser"
