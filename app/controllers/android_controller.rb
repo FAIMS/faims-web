@@ -192,8 +192,9 @@ class AndroidController < ApplicationController
       user.last_name = new_user_lname
       user.password = new_user_password
       user.password_confirmation = new_user_password
+      user.module_password = Base64.strict_encode64(Digest::SHA1.digest(new_user_password))
       if user.save
-        UserModule.where(:user_id => user, :project_module_id => @project_module).first_or_create( :password => Base64.encode64(Digest::SHA1.digest(new_user_password)).strip)
+        UserModule.where(:user_id => user, :project_module_id => @project_module).first_or_create.save
         #TODO move this to the user_modules model, only placed here for testing
         @project_module.db_mgr.with_shared_lock do
           @project_module.db.update_list_of_users(user, user.email)
