@@ -23,6 +23,8 @@ FaimsWeb::Application.routes.draw do
       put :update_details
       get :change_password
       put :save_password
+      get :activate
+      get :deactivate
     end
   end
 
@@ -111,7 +113,7 @@ FaimsWeb::Application.routes.draw do
   get 'project_module/:id/edit_project_module_user' , :to => 'project_module_user#edit_project_module_user', :as => 'edit_project_module_user'
   post 'project_module/:id/update_project_module_user' , :to => 'project_module_user#update_project_module_user', :as => 'update_project_module_user'
   post 'project_module/:id/remove_project_module_user/:user_id' , :to => 'project_module_user#remove_project_module_user', :as => 'remove_project_module_user'
-
+  post 'project_module/:id/reset_project_module_user_password/:user_id', :to => 'project_module_user#reset_project_module_user_password', :as => 'reset_project_module_user_password'
   # project exporters
   get 'project_exporters', :to => 'project_exporter#index', :as => 'project_exporters'
   get 'project_exporters/new', :to => 'project_exporter#new', :as => 'new_project_exporter'

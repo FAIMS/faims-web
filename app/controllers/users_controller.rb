@@ -100,6 +100,7 @@ class UsersController < ApplicationController
     if @user.valid?
       @user.activate
       @user.role = Role.find_by_name('user')
+      @user.module_password = Base64.strict_encode64(Digest::SHA1.digest(params[:user][:password]))
       @user.save
 
       flash[:notice] = "New user created."
@@ -157,6 +158,7 @@ class UsersController < ApplicationController
 
     @user = User.find(params[:id])
     @user.assign_attributes(params[:user])
+    @user.module_password = Base64.strict_encode64(Digest::SHA1.digest(params[:user][:password]))
     if @user.valid?
       @user.save
       flash[:notice] = "Password has been updated."

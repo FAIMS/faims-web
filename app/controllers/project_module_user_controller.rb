@@ -30,6 +30,9 @@ class ProjectModuleUserController < ProjectModuleBaseController
     render_users_list
   end
 
+  def reset_project_module_user_password
+  end
+
   def remove_project_module_user
     page_crumbs :pages_home, :project_modules_index, :project_modules_show, :project_modules_users
 

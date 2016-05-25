@@ -11,7 +11,7 @@ class Ability
       can [:manage], ProjectModule
       if user.admin?
         can [:read, :create, :delete, :update], ProjectExporter if user.admin?
-        can [:edit_role, :update_role, :edit_user, :create, :destroy], User
+        can [:edit_role, :update_role, :edit_user, :create, :destroy, :activate, :deactivate], User
       else
         can [:edit_user], User do |u|
           user == u
