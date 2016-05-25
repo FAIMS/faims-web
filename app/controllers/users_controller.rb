@@ -160,6 +160,12 @@ class UsersController < ApplicationController
     @user.assign_attributes(params[:user])
     @user.module_password = Base64.strict_encode64(Digest::SHA1.digest(params[:user][:password]))
     if @user.valid?
+      for user_module in UserModule.where(:user_id => @user)
+        project_module = ProjectModule.find(user_module.project_module_id)
+        project_module.db.update_list_of_users(@user, @user.email)
+      end
+    end
+    if @user.valid?
       @user.save
       flash[:notice] = "Password has been updated."
       redirect_to users_path
