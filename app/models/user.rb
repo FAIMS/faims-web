@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
   has_many :user_modules
   has_many :project_modules, :through => :user_modules
   # Setup accessible attributes (status/approved flags should NEVER be accessible by mass assignment)
-  attr_accessible :email, :password, :password_confirmation, :first_name, :last_name
+  attr_accessible :email, :password, :password_confirmation, :first_name, :last_name, :module_password
 
   validates_presence_of :first_name
   validates_presence_of :last_name
@@ -59,6 +59,7 @@ class User < ActiveRecord::Base
 
     result = if valid_password?(current_password)
                update_attributes(params)
+               #self.module_password = Base64.strict_encode64(Digest::SHA1.digest(current_password))
              else
                self.errors.add(:current_password, current_password.blank? ? :blank : :invalid)
                self.attributes = params
@@ -73,6 +74,7 @@ class User < ActiveRecord::Base
   def reset_password!(new_password, new_password_confirmation)
     self.password = new_password
     self.password_confirmation = new_password_confirmation
+    #self.module_password = Base64.strict_encode64(Digest::SHA1.digest(new_password)) if valid?
     clear_reset_password_token if valid?
     if valid?
       unlock_access! if access_locked?
