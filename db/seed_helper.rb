@@ -5,13 +5,19 @@ def create_roles_and_users
   Role.create!(:name => 'superuser')
   Role.create!(:name => 'user')
 
+  # A superuser
   create_user(first_name: 'Faims',
               last_name: 'Admin',
               email: 'faimsadmin@intersect.org.au',
-              password: 'Pass.123',
               password: 'Pass.123')
   set_role('faimsadmin@intersect.org.au', 'superuser')
 
+  # A non-superuser
+  create_user(first_name: 'Faims'
+              last_name: 'User',
+              email: 'user@faims.org.au',
+              password: 'Pass.123')
+  set_role('user@faims.org.au', 'user')
 end
 
 def set_role(email, role)

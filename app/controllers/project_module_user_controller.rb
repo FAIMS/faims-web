@@ -16,6 +16,7 @@ class ProjectModuleUserController < ProjectModuleBaseController
     authenticate_project_module_user
 
     user = User.find(params[:user_id])
+    UserModule.where(:user_id => user, :project_module_id => @project_module).first_or_create.save
     @project_module.db_mgr.with_shared_lock do
       @project_module.db.update_list_of_users(user, @project_module.db.get_project_module_user_id(current_user.email))
 
@@ -28,6 +29,9 @@ class ProjectModuleUserController < ProjectModuleBaseController
     flash.now[:error] = get_error_message(e)
 
     render_users_list
+  end
+
+  def reset_project_module_user_password
   end
 
   def remove_project_module_user

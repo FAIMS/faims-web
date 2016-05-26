@@ -45,9 +45,7 @@ class Database
           firstname: user.first_name,
           lastname: user.last_name,
           email: user.email,
-          #TODO better handling of this on a per-module basis, perhaps
-          #password: user.user_modules(:project_id => @project_module).last.password || nil
-          password: user.user_modules.last ? user.user_modules.last.password : nil
+          password: user.module_password
       }
       begin
         db.execute(WebQuery.update_list_of_users_with_password, params)
@@ -950,21 +948,22 @@ class Database
     end
   end
 
-  def merge_database(fromDB, version)
-    puts "MERGE DATABASE"
+  def has_password
     hasPassword = false
     result = @db.execute(WebQuery.has_password_column)
     result.each do |row|
       if row[0].to_s == "1"
-        puts "debug: db has password column"
         hasPassword = true
       else
-        puts "debug: db does not have password column"
         hasPassword = false
       end
     end
+    return hasPassword
+  end
 
-    @db.execute_batch(WebQuery.merge_database(fromDB, version, hasPassword))
+  def merge_database(fromDB, version)
+    puts "MERGE DATABASE"
+      @db.execute_batch(WebQuery.merge_database(fromDB, version, has_password))
     validate_records
   end
 
