@@ -13,7 +13,7 @@ def create_roles_and_users
   set_role('faimsadmin@intersect.org.au', 'superuser')
 
   # A non-superuser
-  create_user(first_name: 'Faims'
+  create_user(first_name: 'Faims',
               last_name: 'User',
               email: 'user@faims.org.au',
               password: 'Pass.123')
