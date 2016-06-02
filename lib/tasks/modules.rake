@@ -31,6 +31,11 @@ begin
       delete_module
     end
 
+    desc 'Wipe module'
+    task :wipe => :environment do
+      wipe_module
+    end
+
     desc 'Restore module'
     task :restore => :environment do
       restore_module

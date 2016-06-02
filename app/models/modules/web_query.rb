@@ -1636,6 +1636,34 @@ EOF
 #     )
 #   end
 
+  def self.get_list_of_user_emails
+    cleanup_query(<<EOF
+    select email from user;
+EOF
+    )
+  end
+
+  def self.get_user_fname
+    cleanup_query(<<EOF
+    select fname from user where email = ?
+EOF
+    )
+  end
+
+  def self.get_user_lname
+    cleanup_query(<<EOF
+    select lname from user where email = ?
+EOF
+    )
+  end
+
+  def self.get_user_password
+    cleanup_query(<<EOF
+    select password from user where email = ?
+EOF
+    )
+  end
+
   def self.get_list_of_users
     cleanup_query(<<EOF
     select userid, fname, lname, email from user where userdeleted is NULL;

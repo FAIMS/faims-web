@@ -24,6 +24,26 @@ class Database
 
   # USER QUERIES
 
+  def get_list_of_user_emails
+    users = @db.execute(WebQuery.get_list_of_user_emails)
+    users.flatten
+  end
+
+  def get_user_fname(email)
+    fname = @db.execute(WebQuery.get_user_fname, email)
+    fname.flatten[0]
+  end
+
+  def get_user_lname(email)
+    lname = @db.execute(WebQuery.get_user_lname, email)
+    lname.flatten[0]
+  end
+
+  def get_user_password(email)
+    password = @db.execute(WebQuery.get_user_password, email)
+    password.flatten[0]
+  end
+
   def get_list_of_users
     users = @db.execute(WebQuery.get_list_of_users)
     users
@@ -65,6 +85,30 @@ class Database
     end
   end
 
+  def associate_users
+    for module_user_email in get_list_of_user_emails
+      user = User.where(:email => module_user_email).first
+      puts user.inspect
+      if @project_module && has_password
+        if user
+          UserModule.where(:user_id => user, :project_module_id => @project_module).first_or_create.save
+        else
+          alphabetLow = [('a'..'z')].map { |i| i.to_a }.flatten
+          alphabetHigh = [('A'..'Z')].map { |i| i.to_a }.flatten
+          pw = (0...4).map { alphabetLow[rand(alphabetLow.length)] }.join
+          pw += (0...4).map { alphabetHigh[rand(alphabetHigh.length)] }.join
+          newUser = User.new
+          newUser.email = module_user_email
+          newUser.first_name = get_user_fname(module_user_email)
+          newUser.last_name = get_user_lname(module_user_email)
+          newUser.module_password = get_user_password(module_user_email)
+          newUser.password = newUser.password_confirmation = "#{pw}4@^"
+          puts newUser.errors.inspect unless newUser.save
+          UserModule.where(:user_id => newUser, :project_module_id => @project_module).first_or_create.save
+        end
+      end
+    end
+  end
   # ENTITY AND RELATIONSHIP QUERIES
 
   def is_arch_entity_forked(uuid)
