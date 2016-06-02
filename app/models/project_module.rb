@@ -525,7 +525,7 @@ class ProjectModule < ActiveRecord::Base
 
   def get_settings
     JSON.parse(File.read(get_path(:settings).as_json))
-    end
+  end
 
   def set_settings(args)
     File.open(get_path(:settings), 'w') do |file|
