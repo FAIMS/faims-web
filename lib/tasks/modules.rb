@@ -127,6 +127,17 @@ def upload_module_files
 end
 
 def restore_module
+  file_path = ENV['file'] unless ENV['file'].nil?
+  if file_path.blank?
+    puts "Usage: rake modules:reload file=<path to file tarball>"
+    return
+  end
+  puts "Importing module archive, this may take a while"
+  ProjectModule.upload_project_module(file_path)
+  puts "Done."
+end
+
+def undelete_module
   module_key = ENV['key'] unless ENV['key'].nil?
   if (module_key.nil?) || (module_key.blank?)
     puts "Usage: rake modules:restore key=<module key>"

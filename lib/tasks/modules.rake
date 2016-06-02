@@ -31,12 +31,17 @@ begin
       delete_module
     end
 
-    desc 'Wipe module'
+    desc 'Wipe a specific module including its files and database relationships'
     task :wipe => :environment do
       wipe_module
     end
 
-    desc 'Restore module'
+    desc 'Undelete module'
+    task :undelete => :environment do
+      undelete_module
+    end
+
+    desc "Restore module from archive"
     task :restore => :environment do
       restore_module
     end
