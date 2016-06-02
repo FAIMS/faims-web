@@ -112,6 +112,20 @@ def wipe_module
   end
 end
 
+def upload_module_files
+  module_key = ENV['key'] unless ENV['key'].nil?
+  file_path = ENV['file'] unless ENV['file'].nil?
+  if (module_key.blank?) || (file_path.blank?)
+    puts "Usage: rake modules:upload key=<module key> file=<path to file tarball>"
+    return
+  end
+  project_module = ProjectModule.find_by_key(module_key)
+  project_module.data_mgr.with_exclusive_lock do
+    project_module.add_data_batch_file(file_path)
+    puts "File uploaded"
+  end
+end
+
 def restore_module
   module_key = ENV['key'] unless ENV['key'].nil?
   if (module_key.nil?) || (module_key.blank?)

@@ -41,6 +41,11 @@ begin
       restore_module
     end
 
+    desc "Upload module files"
+    task :upload => :environment do
+      upload_module_files
+    end
+
     namespace :test do
 
       desc 'Generate test project modules'
