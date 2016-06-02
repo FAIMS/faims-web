@@ -88,7 +88,6 @@ class Database
   def associate_users
     for module_user_email in get_list_of_user_emails
       user = User.where(:email => module_user_email).first
-      puts user.inspect
       if @project_module && has_password
         if user
           UserModule.where(:user_id => user, :project_module_id => @project_module).first_or_create.save
