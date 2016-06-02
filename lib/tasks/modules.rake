@@ -51,6 +51,85 @@ begin
       upload_module_files
     end
 
+    namespace :settings do
+
+      desc "Change module client sponsor"
+      task :client_sponsor => :environment do
+        update_settings(:client_sponsor)
+      end
+
+      desc "Change module contact address"
+      task :contact_address => :environment do
+        update_settings(:contact_address)
+      end
+
+      desc "Change module copyright holder"
+      task :copyright_holder => :environment do
+        update_settings(:copyright_holder)
+      end
+
+      desc "Change module description"
+      task :description => :environment do
+        update_settings(:description)
+      end
+
+      desc "Change module has sensitive data"
+      task :has_sensitive_data => :environment do
+        update_settings(:has_sensitive_data)
+      end
+
+      desc "Change module land owner"
+      task :land_owner => :environment do
+        update_settings(:land_owner)
+      end
+
+      desc "Change module name or retrieve module name/keys"
+      task :name => :environment do
+        update_settings(:name)
+      end
+
+      desc "Change module participant"
+      task :participant => :environment do
+        update_settings(:participant)
+      end
+
+      desc "Change module permit holder"
+      task :permit_holder => :environment do
+        update_settings(:permit_holder)
+      end
+
+      desc "Change module permit issued by"
+      task :permit_issued_by => :environment do
+        update_settings(:permit_issued_by)
+      end
+
+      desc "Change module permit no"
+      task :permit_no => :environment do
+        update_settings(:permit_no)
+      end
+
+      desc "Change module permit type"
+      task :permit_type => :environment do
+        update_settings(:permit_type)
+      end
+
+      desc "Change module season"
+      task :season => :environment do
+        update_settings(:season)
+      end
+
+      desc "Change module SRID"
+      task :srid => :environment do
+        update_settings(:srid)
+      end
+
+      desc "Change module version"
+      task :version => :environment do
+        update_settings(:version)
+      end
+
+    end
+
     namespace :test do
 
       desc 'Generate test project modules'

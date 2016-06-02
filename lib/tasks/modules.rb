@@ -154,3 +154,34 @@ def undelete_module
     puts "Module does not exist"
   end
 end
+
+def update_settings(setting)
+  module_key = ENV['key'] unless ENV['key'].nil?
+  val = ENV['value'] unless ENV['value'].nil?
+  if (module_key.blank?) && setting != :name
+    puts "Usage: Read: rake modules:settings:[setting] key=<module key>"
+    puts "Usage: Change: rake modules:settings:[setting] key=<module key> value=<new value>"
+    return
+  elsif (module_key.blank?) && setting == :name
+    for project_module in ProjectModule.all
+      puts "#{project_module.key} => #{project_module.get_settings["name"]}"
+    end
+    return
+  end
+  project_module = ProjectModule.find_by_key(module_key)
+  orig_settings = project_module.get_settings.symbolize_keys
+  if val.blank?
+    puts orig_settings[setting]
+  else
+    if setting == :name
+      project_module.name = val
+      project_module.save
+    end
+    orig_settings.update setting => val
+    project_module.set_settings(orig_settings)
+  end
+  # project_module.data_mgr.with_exclusive_lock do
+  #   project_module.add_data_batch_file(file_path)
+  #   puts "File uploaded"
+  # end
+end
