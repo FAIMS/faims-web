@@ -30,7 +30,7 @@ fi
 if [ ! -d "$APP_ROOT" ]; then
     sudo git clone https://github.com/FAIMS/faims-web.git $APP_ROOT
     sudo chown -R $USER:$USER $APP_ROOT
-    cd $APP_ROOT && git checkout sprint-2-staging
+    cd $APP_ROOT && git checkout sprint-4-staging
 fi
 
 if [ ! -h "/etc/puppet/hiera.yaml" ]; then
@@ -39,7 +39,7 @@ fi
 
 # Configure puppet
 sed -i "s/webapp_user:.*/webapp_user: $USER/g" $APP_ROOT/puppet/data/common.yaml
-sed -i "s/app_tag:.*/app_tag: sprint-2-staging/g" $APP_ROOT/puppet/data/common.yaml
+sed -i "s/app_tag:.*/app_tag: sprint-4-staging/g" $APP_ROOT/puppet/data/common.yaml
 
 # Update repo
 sudo puppet apply --pluginsync $APP_ROOT/puppet/repo.pp --modulepath=$APP_ROOT/puppet/modules:$HOME/.puppet/modules

@@ -18,4 +18,12 @@ class imagemagick {
     require => Exec["update imagemagick sources"]
   }
 
+  file { "/etc/ImageMagick/policy.xml":
+    mode    => "0644",
+    owner   => root,
+    group   => root,
+    content => template("imagemagick/policy.xml"),
+    require => Package[$imagemagick_packages]
+  }
+
 }
