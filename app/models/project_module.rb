@@ -80,6 +80,7 @@ class ProjectModule < ActiveRecord::Base
   has_many :project_module_exports
   has_many :user_modules
   has_many :users, :through => :user_modules
+  has_many :background_jobs
   # Custom Validations
 
   def validate_validation_schema(schema)
@@ -524,7 +525,7 @@ class ProjectModule < ActiveRecord::Base
 
   def get_settings
     JSON.parse(File.read(get_path(:settings).as_json))
-    end
+  end
 
   def set_settings(args)
     File.open(get_path(:settings), 'w') do |file|
@@ -790,6 +791,7 @@ class ProjectModule < ActiveRecord::Base
         end
         project_module.created = true
         project_module.save
+        project_module.db.associate_users
       rescue Exception => e
         logger.error e
 
