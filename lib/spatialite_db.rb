@@ -71,6 +71,10 @@ class SpatialiteDB
 
   def self.spatialite_library
     return 'libspatialite.dylib' if (/darwin/ =~ RUBY_PLATFORM) != nil
-    return 'libspatialite.so'
+    if `. /etc/lsb-release 2>/dev/null ; echo $DISTRIB_CODENAME`.strip == 'trusty'
+      return 'libspatialite.so'
+    else
+      return 'mod_spatialite.so'
+    end
   end
 end
