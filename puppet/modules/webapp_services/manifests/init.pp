@@ -12,6 +12,10 @@ class webapp_services {
 
   service { "god":
     ensure     => "running",
+    start      => "/etc/init.d/god start",
+    stop       => "/etc/init.d/god stop",
+    status     => "/etc/init.d/god status",
+    restart    => "/etc/init.d/god restart",
     enable     => "true",
     hasrestart => "true",
     require    => Exec["/etc/init.d/god stop"]
