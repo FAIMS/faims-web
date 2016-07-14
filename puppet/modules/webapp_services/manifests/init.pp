@@ -2,7 +2,7 @@ class webapp_services {
 
   $exec_path = "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
 
-  exec { "service god stop":
+  exec { "/etc/init.d/god stop":
     path => $exec_path,
   }
 
