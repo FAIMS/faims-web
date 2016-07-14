@@ -14,7 +14,7 @@ class webapp_services {
     ensure     => "running",
     enable     => "true",
     hasrestart => "true",
-    require    => Exec["service god stop"]
+    require    => Exec["/etc/init.d/god stop"]
   }
 
   service { "apache2":
