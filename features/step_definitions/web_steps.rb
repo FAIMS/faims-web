@@ -274,6 +274,10 @@ Then /^show me the page$/ do
   save_and_open_page
 end
 
+Then /^print the page$/ do
+  print page.html
+end
+
 And /^I wait$/ do
   sleep(10)
 end
