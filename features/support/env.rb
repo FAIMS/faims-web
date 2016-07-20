@@ -75,3 +75,10 @@ Capybara.register_driver :firefox do |app|
 end
 
 Capybara.javascript_driver = :firefox
+
+# For our "end to end" tests helping to verify data created during Robotium tests,
+# we'll be testing a remote instance (the same one Robotium plays against).
+if ENV['ROBOTIUM_TEST_ID']
+	Capybara.run_server = false
+	Capybara.app_host = "http://test1.fedarch.org/"
+end
