@@ -16,6 +16,9 @@ Then(/^I search for all records belonging to this Robotium test$/) do
   page.click_button 'Search'
 end
 
+# Then(/^I should see all records belonging to this Robotium test$/) do
+# end
+
 Then(/^I should see the user registration for this Robotium test$/) do
   # Find the table row with the email address
   email_field = find(:xpath, "//form[@id='user_form']").find(:xpath, "//input[@value = '#{ENV['ROBOTIUM_TEST_ID']}_test2@example.com']")

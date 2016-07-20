@@ -1,3 +1,4 @@
 default: --format pretty --tags ~@wip ~@end2end features
 jenkins: --no-color --format progress --tags ~@ignore_jenkins ~@end2end features
-end2end: --no-color --format progress --tags @end2end features
+end2end_signup: --no-color --format progress --tags @end2end_signup features
+end2end_records: --no-color --format progress --tags @end2end_records features

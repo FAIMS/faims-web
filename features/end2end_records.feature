@@ -8,15 +8,7 @@ Feature: Check entity sync
     And I have a user "faimsadmin@intersect.org.au" with role "superuser"
     And I am logged in as "faimsadmin@intersect.org.au" with "Pass.123"
 
-  @end2end
-  @mechanize
-  Scenario: Verify user registration created during Robotium SignupTest
-    Given I am on the project modules page
-    And I follow "Sign Up"
-    And I follow "Edit Users"
-    Then I should see the user registration for this Robotium test
-
-  @end2end
+  @end2end_records
   @mechanize
   Scenario: Verify data synced during Robotium testRun2
     Given I am on the project modules page
@@ -31,7 +23,7 @@ Feature: Check entity sync
       | Model            |                  | count:1.           |
       | Serial           |                  | 1001               |
 
-  @end2end
+  @end2end_records
   @mechanize
   Scenario: Verify data synced during Robotium testRun4
     Given I am on the project modules page
@@ -44,7 +36,7 @@ Feature: Check entity sync
       | Model            |                  | count:2.           |
       | Serial           |                  | 123456790124       |
 
-  @end2end
+  @end2end_records
   @mechanize
   Scenario: Verify data synced during Robotium testRun4
     Given I am on the project modules page
