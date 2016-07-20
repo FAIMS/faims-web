@@ -27,6 +27,7 @@ group :development, :test do
   # cucumber gems
   gem 'cucumber', '>=1.3.18'
   gem 'capybara'
+  gem 'capybara-mechanize' # To run tests against non-local URLs like test1.fedarch.org
   gem 'database_cleaner'
   gem 'launchy' # So you can do Then show me the page
   gem 'selenium-webdriver'
