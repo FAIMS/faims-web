@@ -26,31 +26,30 @@ if ! test ${MD5SUM_EXE}; then
 fi
 
 echo "testing read"
-echo "Hello World" > readme
+echo "Hello World" > $DIR/readme
 #echo "##### convert ######"
-convert read.jpg readme.png 2>/dev/null 1>/dev/null
+convert $DIR/read.jpg $DIR/readme.png 2>/dev/null 1>/dev/null
 #echo "####################"
-if [ ! -e readme.png ]
+if [ ! -e $DIR/readme.png ]
 then
     echo "SAFE"
 else
     echo "UNSAFE"
     RET=1
-    rm readme.png
+    rm $DIR/readme.png
 fi
-rm readme
+rm $DIR/readme
 echo ""
 
-
 echo "testing delete"
-touch delme
+touch $DIR/delme
 #echo "#### identify ######"
-identify delete.jpg 2>/dev/null 1>/dev/null
+identify $DIR/delete.jpg 2>/dev/null 1>/dev/null
 #echo "####################"
-if [ -e delme ]
+if [ -e $DIR/delme ]
 then
     echo "SAFE"
-    rm delme
+    rm $DIR/delme
 else
     echo "UNSAFE"
     RET=1
@@ -63,15 +62,15 @@ echo "testing http with local port: ${PORT}"
 # silence job control messages
 set -b
 # setup a dummy http server
-printf "HTTP/1.0 200 OK\n\n" | nc -l ${PORT} > requestheaders 2>/dev/null &
+printf "HTTP/1.0 200 OK\n\n" | nc -l ${PORT} > $DIR/requestheaders 2>/dev/null &
 if test $? -ne 0; then
     echo >&2 "failed to listen on localhost:${PORT}"
     exit 1
 fi
-sed "s/PORT/${PORT}/g" localhost_http.jpg > localhost_http1.jpg
-identify localhost_http1.jpg 2>/dev/null 1>/dev/null
-rm localhost_http1.jpg
-if test -s requestheaders; then
+sed "s/PORT/${PORT}/g" $DIR/localhost_http.jpg > $DIR/localhost_http1.jpg
+identify $DIR/localhost_http1.jpg 2>/dev/null 1>/dev/null
+rm $DIR/localhost_http1.jpg
+if test -s $DIR/requestheaders; then
     echo "UNSAFE"
     RET=1
 else
@@ -79,18 +78,18 @@ else
     # terminate the dummy server
     nc -z localhost ${PORT} 2>/dev/null >/dev/null
 fi
-rm requestheaders
+rm $DIR/requestheaders
 set +b
 echo ""
 
 NONCE=$(echo $RANDOM | ${MD5SUM_EXE} | fold -w 8 | head -n 1)
 echo "testing http with nonce: ${NONCE}"
 IP=$(curl -q -s ifconfig.co)
-sed "s:NONCE:${NONCE}:g" http.jpg > http1.jpg
+sed "s:NONCE:${NONCE}:g" $DIR/http.jpg > $DIR/http1.jpg
 #echo "#### identify ######"
-identify http1.jpg 2>/dev/null 1>/dev/null
+identify $DIR/http1.jpg 2>/dev/null 1>/dev/null
 #echo "####################"
-rm http1.jpg
+rm $DIR/http1.jpg
 if curl -q -s "http://hacker.toys/dns?query=${NONCE}.imagetragick" | grep -q $IP; then
     echo "UNSAFE"
     RET=1
@@ -101,13 +100,13 @@ echo ""
 
 echo "testing rce1"
 #echo "#### identify ######"
-identify rce1.jpg 2>/dev/null 1>/dev/null
+identify $DIR/rce1.jpg 2>/dev/null 1>/dev/null
 #echo "####################"
-if [ -e rce1 ]
+if [ -e $DIR/rce1 ]
 then
     echo "UNSAFE"
     RET=1
-    rm rce1
+    rm $DIR/rce1
 else
     echo "SAFE"
 fi
@@ -115,13 +114,13 @@ echo ""
 
 echo "testing rce2"
 #echo "#### identify ######"
-identify rce2.jpg 2>/dev/null 1>/dev/null
+identify $DIR/rce2.jpg 2>/dev/null 1>/dev/null
 #echo "####################"
-if [ -e rce2 ]
+if [ -e $DIR/rce2 ]
 then
     echo "UNSAFE"
     RET=1
-    rm rce2
+    rm $DIR/rce2
 else
     echo "SAFE"
 fi
@@ -129,13 +128,13 @@ echo ""
 
 echo "testing MSL"
 #echo "#### identify ######"
-identify msl.jpg 2>/dev/null 1>/dev/null
+identify $DIR/msl.jpg 2>/dev/null 1>/dev/null
 #echo "####################"
-if [ -e msl.hax ]
+if [ -e $DIR/msl.hax ]
 then
     echo "UNSAFE"
     RET=1
-    rm msl.hax
+    rm $DIR/msl.hax
 else
     echo "SAFE"
 fi
