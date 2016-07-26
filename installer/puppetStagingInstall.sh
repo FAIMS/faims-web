@@ -62,6 +62,7 @@ case $? in
 *)
 	echo "Something went wrong testing for ImageTragic vulnerability"
 esac
+popd
 
 # Restart services
 sudo puppet apply --pluginsync $APP_ROOT/puppet/restart.pp --modulepath=$APP_ROOT/puppet/modules:$HOME/.puppet/modules
