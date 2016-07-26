@@ -21,16 +21,6 @@ class imagemagick {
 			require => Exec["update imagemagick sources"]
 		}
 
-		$vuln = generate("${app_root}/tools/imagemagick-poc/test.sh")
-		if $vuln == 1 {
-			file { "/etc/ImageMagick/policy.xml":
-				mode => "0644",
-				owner => root,
-				group => root,
-				content => template("imagemagick/policy.xml"),
-				require => Package[$imagemagick_packages]
-			}
-		}
 	} elsif $::lsbdistcodename == 'xenial' {
 		$imagemagick_packages = ["imagemagick","libmagickwand-dev","ffmpeg","libmagickcore-6.q16-2-extra","ghostscript","netpbm","autotrace","html2ps","ufraw-batch","dcraw","transfig","libbz2-1.0"]
 		exec { "update imagemagick sources":
