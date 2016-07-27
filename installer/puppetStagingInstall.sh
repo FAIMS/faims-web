@@ -47,5 +47,22 @@ sudo puppet apply --pluginsync $APP_ROOT/puppet/repo.pp --modulepath=$APP_ROOT/p
 # Update server
 sudo puppet apply --pluginsync $APP_ROOT/puppet/update.pp --modulepath=$APP_ROOT/puppet/modules:$HOME/.puppet/modules
 
+# Test for and patch ImageTragic
+pushd $APP_ROOT/tools/imagemagick-poc
+./test.sh
+case $? in
+0)
+	echo "System is not vulnerable to ImageTragic, leaving Imagemagick policy.xml as-in"
+	;;
+1)
+	echo "System is vulnerable to ImageTragic, replacing Imagemagick policy.xml"
+	sudo mkdir -p /etc/ImageMagick
+	sudo cp policy.xml /etc/ImageMagick/
+	;;
+*)
+	echo "Something went wrong testing for ImageTragic vulnerability"
+esac
+popd
+
 # Restart services
 sudo puppet apply --pluginsync $APP_ROOT/puppet/restart.pp --modulepath=$APP_ROOT/puppet/modules:$HOME/.puppet/modules
