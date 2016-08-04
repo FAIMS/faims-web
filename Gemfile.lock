@@ -124,7 +124,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (4.2.1)
       railties (>= 3.2.16)
-    json (1.8.1)
+    json (1.8.3)
     kgio (2.9.2)
     launchy (2.4.2)
       addressable (~> 2.3)
@@ -294,4 +294,4 @@ DEPENDENCIES
   unicorn
 
 BUNDLED WITH
-   1.12.3
+   1.12.5
