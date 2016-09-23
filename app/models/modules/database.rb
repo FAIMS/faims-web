@@ -1106,7 +1106,7 @@ class Database
 
     data_definition = XSLTParser.parse_data_schema(xml)
     db.execute_batch(data_definition)
-    db.execute("INSERT into user (fname,lname,email) VALUES ('#{admin_user.first_name}','#{admin_user.last_name}','#{admin_user.email}');" ) if admin_user
+    db.execute("INSERT into user (fname,lname,email,password) VALUES ('#{admin_user.first_name}','#{admin_user.last_name}','#{admin_user.email}','#{admin_user.module_password}');" ) if admin_user
   end
 
   def self.migrate_database(from, to)
