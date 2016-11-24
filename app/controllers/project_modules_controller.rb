@@ -130,6 +130,10 @@ class ProjectModulesController < ProjectModuleBaseController
 
     if not @project_module.deleted
       @project_module.with_exclusive_lock do
+        @project_module.background_jobs.each {
+          |background_job|
+          background_job.destroy
+        }
         @project_module.deleted = true
         @project_module.save
 
@@ -292,7 +296,7 @@ class ProjectModulesController < ProjectModuleBaseController
     page_crumbs :pages_home, :project_modules_index, :project_modules_show, :project_modules_export, :project_modules_export_results
 
     project_export = ProjectModuleExport.where( :uuid => params[:uuid] ).first
-    
+
     if project_export.blank?
       flash[:error] = "Failed to export module"
       redirect_to export_project_module_path(@project_module) and return

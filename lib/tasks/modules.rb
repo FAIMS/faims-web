@@ -57,6 +57,12 @@ def delete_module
 
   project_module = ProjectModule.find_by_key(module_key)
   if project_module
+    puts "Removing background job relationships"
+    project_module.background_jobs.each {
+      |background_job|
+      background_job.destroy
+    }
+    puts "Flagging module object as deleted"
     project_module.with_exclusive_lock do
       project_module.deleted = true
       project_module.save
