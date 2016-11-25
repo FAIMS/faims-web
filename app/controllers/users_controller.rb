@@ -139,7 +139,7 @@ class UsersController < ApplicationController
     @user.assign_attributes(params[:user])
     if @user.valid?
       for user_module in UserModule.where(:user_id => @user)
-        project_module = ProjectModule.find(user_module.project_module_id)
+        project_module = ProjectModule.where(:deleted => [true,false]).find(user_module.project_module_id)
         project_module.db.update_list_of_users(@user, @user.email)
       end
     end
@@ -167,7 +167,7 @@ class UsersController < ApplicationController
     @user.module_password = Base64.strict_encode64(Digest::SHA1.digest(params[:user][:password]))
     if @user.valid?
       for user_module in UserModule.where(:user_id => @user)
-        project_module = ProjectModule.find(user_module.project_module_id)
+        project_module = ProjectModule.where(:deleted => [true,false]).find(user_module.project_module_id)
         project_module.db.update_list_of_users(@user, @user.email)
       end
     end
