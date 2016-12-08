@@ -2,7 +2,7 @@ class webapp_services {
 
   $exec_path = "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
 
-  exec { "service god stop":
+  exec { "/etc/init.d/god stop":
     path => $exec_path,
   }
 
@@ -12,9 +12,13 @@ class webapp_services {
 
   service { "god":
     ensure     => "running",
+    start      => "/etc/init.d/god start",
+    stop       => "/etc/init.d/god stop",
+    status     => "/etc/init.d/god status",
+    restart    => "/etc/init.d/god restart",
     enable     => "true",
     hasrestart => "true",
-    require    => Exec["service god stop"]
+    require    => Exec["/etc/init.d/god stop"]
   }
 
   service { "apache2":

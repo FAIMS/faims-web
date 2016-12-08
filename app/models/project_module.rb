@@ -77,6 +77,10 @@ class ProjectModule < ActiveRecord::Base
 
   validates :key, :presence => true, :uniqueness => true
 
+  has_many :project_module_exports
+  has_many :user_modules
+  has_many :users, :through => :user_modules
+  has_many :background_jobs
   # Custom Validations
 
   def validate_validation_schema(schema)
@@ -212,9 +216,9 @@ class ProjectModule < ActiveRecord::Base
   def cleanup_module
     safe_delete_directory get_path(:project_module_dir)
   end
-  
+
   # project module attributes
-  
+
   def name
     read_attribute(:name)
   end
@@ -236,13 +240,13 @@ class ProjectModule < ActiveRecord::Base
   end
 
   # project_module database
-  
+
   def db
     Database.new(self)
   end
 
   # project_module file name and path getters
-  
+
   def get_name(symbol)
     @file_map[symbol][:name]
   end
@@ -332,7 +336,7 @@ class ProjectModule < ActiveRecord::Base
     data_mgr.clear_lock
     db_mgr.clear_lock
   end
-  
+
   # project module android info
 
   def settings_info
@@ -371,7 +375,7 @@ class ProjectModule < ActiveRecord::Base
   def data_request_file(file)
     get_request_file(get_path(:data_files_dir), file)
   end
-  
+
   # database use versions when sending info
   def db_version_file_name(from_version, to_version)
     "db_v#{from_version}-#{to_version}.sqlite"
@@ -437,7 +441,7 @@ class ProjectModule < ActiveRecord::Base
   def add_server_file(path, file)
     add_file(SERVER, get_path(:server_files_dir), path, file)
   end
-  
+
   def add_app_file(path, file)
     add_file(APP, get_path(:app_files_dir), path, file)
     # need to cause database to sync
@@ -518,10 +522,10 @@ class ProjectModule < ActiveRecord::Base
   end
 
   # project module settings getter and setter
-  
+
   def get_settings
     JSON.parse(File.read(get_path(:settings).as_json))
-    end
+  end
 
   def set_settings(args)
     File.open(get_path(:settings), 'w') do |file|
@@ -787,6 +791,7 @@ class ProjectModule < ActiveRecord::Base
         end
         project_module.created = true
         project_module.save
+        project_module.db.associate_users
       rescue Exception => e
         logger.error e
 
@@ -825,7 +830,8 @@ class ProjectModule < ActiveRecord::Base
 
   # Export project module helpers
 
-  def export_project_module(exporter, input, download_dir, markup_file)
+  def export_project_module(exporter, input, download_dir, markup_file, project_export_id)
+    @project_export = ProjectModuleExport.find(project_export_id)
     input_json = File.open(File.join("/tmp", "input_" + SecureRandom.uuid + ".json"), "w+")
     input_json.write(input.to_json)
     input_json.close
@@ -852,4 +858,113 @@ class ProjectModule < ActiveRecord::Base
     Rails.application.config.server_upload_failures_directory
   end
 
+  # background job hooks
+
+  def enqueue(job)
+    bj = BackgroundJob.where(:delayed_job_id => job.id).first_or_create(
+      :status => 'Pending',
+      :project_module => self,
+      :module_name => self.name,
+      :delayed_job => job,
+      :job_type => 'Unknown'
+    )
+    method_name = YAML.load(job.handler).method_name.to_s
+    if method_name == 'archive_project_module'
+      bj.job_type = 'Archive Module'
+    elsif method_name == 'export_project_module'
+      args = YAML.load(job.handler).args
+      project_export = ProjectModuleExport.where(:project_module_id => self, :exporter => args[0].key, :options => args[1].to_json).first
+      if !project_export.blank?
+        project_export.background_job = bj
+        project_export.save
+      end
+      bj.job_type = 'Export Module'
+    end
+    bj.save
+  end
+
+  def before(job)
+    bj = BackgroundJob.where(:delayed_job_id => job.id).last
+    bj.status = 'Running'
+    bj.save
+  end
+
+  def after(job)
+    bj = BackgroundJob.where(:delayed_job_id => job.id).last
+    bj.status = 'Finished'
+    bj.save
+  end
+
+  def success(job)
+    bj = BackgroundJob.where(:delayed_job_id => job.id).last
+    bj.status = 'Finished Successfully'
+    bj.save
+  end
+
+  def error(job, exception)
+    bj = BackgroundJob.where(:delayed_job_id => job.id).last
+    bj.status = 'Failed'
+    bj.failure_message = exception.message
+    bj.save
+  end
+
+  def failure(job)
+    bj = BackgroundJob.where(:delayed_job_id => job.id).last
+    bj.status = 'Failed'
+    bj.failure_message = job.last_error
+    bj.save
+  end
+
+  # instance-less version
+
+  ModuleUploadJob = Struct.new(:file, :tmpfile, :current_user) do
+    def enqueue(job)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).first_or_create(
+        :status => 'Pending',
+        :project_module => nil,
+        #:user => current_user,
+        :job_type => "Upload Module",
+        :module_name => file,
+        :delayed_job => job
+      )
+      #bj.save
+    end
+
+    def perform
+      Rails.logger.warn file.inspect
+      ProjectModule.upload_project_module(tmpfile, current_user)
+    end
+
+    def before(job)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).last
+      bj.status = 'Running'
+      bj.save
+    end
+
+    def after(job)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).last
+      bj.status = 'Finished'
+      bj.save
+    end
+
+    def success(job)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).last
+      bj.status = 'Finished Successfully'
+      bj.save
+    end
+
+    def error(job, exception)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).last
+      bj.status = 'Failed'
+      bj.failure_message = exception.message
+      bj.save
+    end
+
+    def failure(job)
+      bj = BackgroundJob.where(:delayed_job_id => job.id).last
+      bj.status = 'Failed'
+      bj.failure_message = job.last_error
+      bj.save
+    end
+  end
 end

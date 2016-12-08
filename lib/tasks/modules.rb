@@ -1,5 +1,7 @@
 def clear_project_modules
   ProjectModule.unscoped.destroy_all
+  BackgroundJob.unscoped.destroy_all
+  UserModule.unscoped.destroy_all
 
   project_modules_dir = ProjectModule.project_modules_path
   FileUtils.remove_entry_secure Rails.root.join(project_modules_dir) if File.directory? project_modules_dir
@@ -55,6 +57,12 @@ def delete_module
 
   project_module = ProjectModule.find_by_key(module_key)
   if project_module
+    puts "Removing background job relationships"
+    project_module.background_jobs.each {
+      |background_job|
+      background_job.destroy
+    }
+    puts "Flagging module object as deleted"
     project_module.with_exclusive_lock do
       project_module.deleted = true
       project_module.save
@@ -64,7 +72,78 @@ def delete_module
   end
 end
 
+def wipe_module
+  module_key = ENV['key'] unless ENV['key'].nil?
+  if (module_key.nil?) || (module_key.blank?)
+    puts "Usage: rake modules:wipe key=<module key>"
+    return
+  end
+
+  project_module = ProjectModule.find_by_key(module_key)
+  success = false
+  if project_module
+    begin
+      puts "Removing background job relationships"
+      project_module.background_jobs.each {
+        |background_job|
+        background_job.destroy
+      }
+      puts "Removing user->module relationships"
+      project_module.user_modules.each {
+        |user_module|
+        user_module.destroy
+      }
+      puts "Removing exports relationships"
+      project_module.project_module_exports.each {
+        |export|
+        export.destroy
+      }
+      puts "Removing module object"
+      project_module.with_exclusive_lock do
+        project_module.destroy
+      end
+      success = true
+    rescue Exception => e
+      puts e.message
+    end
+    if success
+      puts "Deleting module directory"
+      project_module_dir = File.join(ProjectModule.project_modules_path, module_key)
+      FileUtils.remove_entry_secure Rails.root.join(project_module_dir) if File.directory? project_module_dir
+    else
+      puts "Failed to clean up module objects in database, leaving module files in place.  Please contact an administrator and inform them of this."
+    end
+  else
+    puts "Module does not exist"
+  end
+end
+
+def upload_module_files
+  module_key = ENV['key'] unless ENV['key'].nil?
+  file_path = ENV['file'] unless ENV['file'].nil?
+  if (module_key.blank?) || (file_path.blank?)
+    puts "Usage: rake modules:upload key=<module key> file=<path to file tarball>"
+    return
+  end
+  project_module = ProjectModule.find_by_key(module_key)
+  project_module.data_mgr.with_exclusive_lock do
+    project_module.add_data_batch_file(file_path)
+    puts "File uploaded"
+  end
+end
+
 def restore_module
+  file_path = ENV['file'] unless ENV['file'].nil?
+  if file_path.blank?
+    puts "Usage: rake modules:reload file=<path to file tarball>"
+    return
+  end
+  puts "Importing module archive, this may take a while"
+  ProjectModule.upload_project_module(file_path)
+  puts "Done."
+end
+
+def undelete_module
   module_key = ENV['key'] unless ENV['key'].nil?
   if (module_key.nil?) || (module_key.blank?)
     puts "Usage: rake modules:restore key=<module key>"
@@ -80,4 +159,35 @@ def restore_module
   else
     puts "Module does not exist"
   end
+end
+
+def update_settings(setting)
+  module_key = ENV['key'] unless ENV['key'].nil?
+  val = ENV['value'] unless ENV['value'].nil?
+  if (module_key.blank?) && setting != :name
+    puts "Usage: Read: rake modules:settings:[setting] key=<module key>"
+    puts "Usage: Change: rake modules:settings:[setting] key=<module key> value=<new value>"
+    return
+  elsif (module_key.blank?) && setting == :name
+    for project_module in ProjectModule.all
+      puts "#{project_module.key} => #{project_module.get_settings["name"]}"
+    end
+    return
+  end
+  project_module = ProjectModule.find_by_key(module_key)
+  orig_settings = project_module.get_settings.symbolize_keys
+  if val.blank?
+    puts orig_settings[setting]
+  else
+    if setting == :name
+      project_module.name = val
+      project_module.save
+    end
+    orig_settings.update setting => val
+    project_module.set_settings(orig_settings)
+  end
+  # project_module.data_mgr.with_exclusive_lock do
+  #   project_module.add_data_batch_file(file_path)
+  #   puts "File uploaded"
+  # end
 end

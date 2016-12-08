@@ -179,4 +179,35 @@ class AndroidController < ApplicationController
     render :json => { message: 'bad request' }.to_json, :status => 400
   end
 
+  def user_signup
+    new_user_fname = params[:new_user_fname]
+    new_user_lname = params[:new_user_lname]
+    new_user_email = params[:new_user_email]
+    new_user_password = params[:new_user_password]
+    user = User.where(:email => new_user_email).first_or_create
+    if !user.new_record?
+      render :json => { message: 'User already exists', :error => "A user with this email address has already registered.  If you are this user and require access to this module please contact an administrator and ask them to enable your account." }.to_json, :status => 409
+    else
+      user.first_name = new_user_fname
+      user.last_name = new_user_lname
+      user.password = new_user_password
+      user.password_confirmation = new_user_password
+      user.module_password = Base64.strict_encode64(Digest::SHA1.digest(new_user_password))
+      if user.save
+        UserModule.where(:user_id => user, :project_module_id => @project_module).first_or_create.save
+        #TODO move this to the user_modules model, only placed here for testing
+        @project_module.db_mgr.with_shared_lock do
+          @project_module.db.update_list_of_users(user, user.email)
+        end
+        render :json => { message: 'New user created' }.to_json, :status => 200
+      else
+        errors = ""
+        for key, err in user.errors.messages
+          errors += key.to_s.capitalize + " " + err.join(", ") + ".  "
+        end
+        render :json => { message: 'Failed to create user', :error => errors.strip }, :status => 400
+      end
+    end
+  end
+
 end

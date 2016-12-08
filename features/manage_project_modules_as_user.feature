@@ -1,12 +1,15 @@
-Feature: Manage project modules
+Feature: Manage project modules as a user
   In order manage project modules
   As a user
   I want to list, create and edit project modules
 
+  # Note! Most of these steps are duplicated in manage_project_modules_as_superuser.feature
+  # with the exception of differences in user permissions
+
   Background:
-    And I have role "superuser"
-    And I have a user "faimsadmin@intersect.org.au" with role "superuser"
-    And I am logged in as "faimsadmin@intersect.org.au"
+    And I have role "user"
+    And I have a user "user@faims.org.au" with role "user"
+    And I am logged in as "user@faims.org.au"
     And I have a project modules dir
 
   Scenario: View project modules list
@@ -208,7 +211,16 @@ Feature: Manage project modules
     And I follow "Upload Module"
     And I pick file "module.tar.bz2" for "Module File"
     And I press "Upload"
-    Then I should see "Module has been successfully uploaded"
+    Then I should be on the jobs page
+    And I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output |
+      | 1   | module.tar.bz2      | Upload Module | Pending  |        |
+    Then I process delayed jobs
+    And I refresh page
+    And I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output |
+      | 1   | module.tar.bz2      | Upload Module | Finished |        |
+    Then I follow "modules-tab"
     And I should be on the project modules page
     And I can find project module files for "Simple Project"
 
@@ -218,29 +230,31 @@ Feature: Manage project modules
     And I follow "Upload Module"
     And I pick file "module.tar.bz2" for "Module File"
     And I press "Upload"
-    Then I should see "Module has been successfully uploaded"
+    Then I should be on the jobs page
+    And I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output |
+      | 1   | module.tar.bz2      | Upload Module | Pending  |        |
+    Then I process delayed jobs
+    And I refresh page
+    And I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output |
+      | 1   | module.tar.bz2      | Upload Module | Finished |        |
+    Then I follow "modules-tab"
+    And I should be on the project modules page
     And I follow "Upload Module"
     And I pick file "module.tar.bz2" for "Module File"
     And I press "Upload"
-    Then I should see "This module already exists in the system"
-
-  @javascript
-  Scenario: Upload Module fails if module is deleted but already exists
-    Given I am on the home page
-    Then I should be on the project modules page
-    And I follow "Upload Module"
-    And I pick file "module.tar.bz2" for "Module File"
-    And I press "Upload"
-    Then I should see "Module has been successfully uploaded"
-    And I follow "Simple Project"
-    And I follow "Delete Module"
-    Then I should see dialog "Are you sure you want to delete module?"
-    And I confirm
-    And I should see "Module Deleted."
-    And I follow "Upload Module"
-    And I pick file "module.tar.bz2" for "Module File"
-    And I press "Upload"
-    Then I should see "This module is deleted but already exists in the system"
+    Then I should be on the jobs page
+    And I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output |
+      | 2   | module.tar.bz2      | Upload Module | Pending  |        |
+      | 1   | module.tar.bz2      | Upload Module | Finished |        |
+    Then I process delayed jobs
+    And I refresh page
+    And I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output                                    |
+      | 2   | module.tar.bz2      | Upload Module | Failed   | This module already exists in the system. |
+      | 1   | module.tar.bz2      | Upload Module | Finished |                                           |
 
   Scenario: Upload Module fails if checksum is wrong
     Given I am on the home page
@@ -248,7 +262,15 @@ Feature: Manage project modules
     And I follow "Upload Module"
     And I pick file "module_corrupted1.tar.bz2" for "Module File"
     And I press "Upload"
-    Then I should see "Wrong hash sum for the module"
+    Then I should be on the jobs page
+    And I should see "jobs" table with
+      | No. | Module / File name        | Job type      | Status   | Output |
+      | 1   | module_corrupted1.tar.bz2 | Upload Module | Pending  |        |
+    Then I process delayed jobs
+    And I refresh page
+    And I should see "jobs" table with
+      | No. | Module / File name        | Job type      | Status   | Output                         |
+      | 1   | module_corrupted1.tar.bz2 | Upload Module | Failed   | Wrong hash sum for the module. |
 
   Scenario: Upload Module fails if file is corrupted
     Given I am on the home page
@@ -256,7 +278,15 @@ Feature: Manage project modules
     And I follow "Upload Module"
     And I pick file "module_corrupted2.tar.bz2" for "Module File"
     And I press "Upload"
-    Then I should see "Failed to upload module"
+    Then I should be on the jobs page
+    And I should see "jobs" table with
+      | No. | Module / File name        | Job type      | Status   | Output |
+      | 1   | module_corrupted2.tar.bz2 | Upload Module | Pending  |        |
+    Then I process delayed jobs
+    And I refresh page
+    And I should see "jobs" table with
+      | No. | Module / File name        | Job type      | Status   | Output                   |
+      | 1   | module_corrupted2.tar.bz2 | Upload Module | Failed   | Failed to upload module. |
 
   Scenario: Upload Module fails if file is not a module
     Given I am on the home page
@@ -264,7 +294,15 @@ Feature: Manage project modules
     And I follow "Upload Module"
     And I pick file "module.tar" for "Module File"
     And I press "Upload"
-    Then I should see "Failed to upload module"
+    Then I should be on the jobs page
+    And I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output |
+      | 1   | module.tar          | Upload Module | Pending  |        |
+    Then I process delayed jobs
+    And I refresh page
+    And I should see "jobs" table with
+      | No. | Module / File name  | Job type      | Status   | Output                   |
+      | 1   | module.tar          | Upload Module | Failed   | Failed to upload module. |
 
   Scenario: Download package
     Given I have project module "Module 1"
@@ -295,24 +333,18 @@ Feature: Manage project modules
     And I make changes to "Module 1"
     And I fake archive size too big
     And I follow "Download Module"
+    Then I should be on the jobs page
+    Then I should see "jobs" table with
+      | No. | Module / File name  | Job type        | Status  | Output |
+      | 1   | Module 1            | Archive Module  | Pending |        |
     And I process delayed jobs
-    Then I should see dialog "Not enough space to archive module."
-    And I cancel
-
-#  @javascript
-#  Scenario: Cannot download package if project module is locked
-#    Given I have project module "Module 1"
-#    And I follow "Show Modules"
-#    Then I should be on the project modules page
-#    And I follow "Module 1"
-#    And database is locked for "Module 1"
-#    And I follow "Download Module"
-#    And I process delayed jobs
-#    Then I should see dialog "Could not process request as project is currently locked."
-#    And I confirm
+    And I refresh page
+    Then I should see "jobs" table with
+      | No. | Module / File name  | Job type        | Status  | Output                              |
+      | 1   | Module 1            | Archive Module  | Failed  | Not enough space to archive module. |
 
   @javascript
-  Scenario: Delete project module
+  Scenario: Users deleting project modules is not permitted
     Given I have project module "Module 1"
     And I have project module "Module 2"
     And I am on the home page
@@ -326,12 +358,10 @@ Feature: Manage project modules
     Then I should see dialog "Are you sure you want to delete module?"
     And I confirm
     Then I should be on the project modules page
-    And I should see "Module Deleted."
-    And I should not see project modules
-      | name     |
-      | Module 1 |
+    And I should see "You are not authorized to access this page."
     And I should see project modules
       | name     |
+      | Module 1 |
       | Module 2 |
 
   @javascript
@@ -350,67 +380,6 @@ Feature: Manage project modules
     And I cancel
     And I am on the project modules page
     Then I should see project modules
-      | name     |
-      | Module 1 |
-      | Module 2 |
-
-  @javascript
-  Scenario: Cannot delete project module if project module is locked
-    Given I have project module "Module 1"
-    And I have project module "Module 2"
-    And I am on the home page
-    Then I should be on the project modules page
-    And I should see project modules
-      | name     |
-      | Module 1 |
-      | Module 2 |
-    And I follow "Module 1"
-    And settings is locked for "Module 1"
-    And I follow "Delete Module"
-    Then I should see dialog "Are you sure you want to delete module?"
-    And I confirm
-    Then I should be on the project modules page
-    And I should see "Could not process request as project is currently locked."
-    And I am on the project modules page
-    Then I should see project modules
-      | name     |
-      | Module 1 |
-      | Module 2 |
-
-  @javascript
-  Scenario: Restore project module
-    Given I have project module "Module 1"
-    And I have project module "Module 2"
-    And I am on the home page
-    Then I should be on the project modules page
-    And I should see project modules
-      | name     |
-      | Module 1 |
-      | Module 2 |
-    And I follow "Module 1"
-    And I follow "Delete Module"
-    Then I should see dialog "Are you sure you want to delete module?"
-    And I confirm
-    Then I should be on the project modules page
-    And I should see "Module Deleted."
-    And I am on the project modules page
-    And I should not see project modules
-      | name     |
-      | Module 1 |
-    And I should see project modules
-      | name     |
-      | Module 2 |
-    Then I am on the restore project modules page
-    And I should see project modules
-      | name     |
-      | Module 1 |
-    And I should not see project modules
-      | name     |
-      | Module 2 |
-    And I click restore for "Module 1"
-    Then I should be on the project modules page
-    And I should see "Module Restored."
-    And I should see project modules
       | name     |
       | Module 1 |
       | Module 2 |

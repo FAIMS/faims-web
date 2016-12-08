@@ -15,6 +15,13 @@
       %th Role
       %td= @user.role ? @user.role.name : ""
     %tr
+      %th Status
+      %td
+        = @user.status == 'A' ? 'Activated' : nil
+        = @user.status == 'U' ? 'Inactive' : nil
+        = @user.status == 'D' ? 'Inactive' : nil
+        = @user.status == 'R' ? 'Inactive' : nil
+    %tr
       %th Last signed in
       %td= @user.last_sign_in_at ? @user.last_sign_in_at.localtime.strftime("%d/%m/%Y %I:%M%p") : "Never logged in"
 = link_to "<i class='icon-arrow-left'></i> Back".html_safe, users_path, :class => "btn"
@@ -23,3 +30,9 @@
   = link_to 'Change Password', change_password_user_path(@user), :class => 'btn btn-inverse'
 - if can?(:edit_user, @user)
   = link_to 'Edit Role', edit_role_user_path(@user), :class => 'btn btn-inverse'
+- if can?(:activate, @user)
+  - if (@user.status == 'U' || @user.status == 'D' || @user.status == 'R')
+    = link_to 'Activate User', activate_user_path(@user), :class => 'btn btn-inverse'
+- if can?(:deactivate, @user)
+  - if (@user.status == 'A')
+    = link_to 'Deactivate User', deactivate_user_path(@user), :class => 'btn btn-inverse'

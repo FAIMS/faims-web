@@ -23,6 +23,8 @@ FaimsWeb::Application.routes.draw do
       put :update_details
       get :change_password
       put :save_password
+      get :activate
+      get :deactivate
     end
   end
 
@@ -111,7 +113,7 @@ FaimsWeb::Application.routes.draw do
   get 'project_module/:id/edit_project_module_user' , :to => 'project_module_user#edit_project_module_user', :as => 'edit_project_module_user'
   post 'project_module/:id/update_project_module_user' , :to => 'project_module_user#update_project_module_user', :as => 'update_project_module_user'
   post 'project_module/:id/remove_project_module_user/:user_id' , :to => 'project_module_user#remove_project_module_user', :as => 'remove_project_module_user'
-
+  post 'project_module/:id/reset_project_module_user_password/:user_id', :to => 'project_module_user#reset_project_module_user_password', :as => 'reset_project_module_user_password'
   # project exporters
   get 'project_exporters', :to => 'project_exporter#index', :as => 'project_exporters'
   get 'project_exporters/new', :to => 'project_exporter#new', :as => 'new_project_exporter'
@@ -119,6 +121,9 @@ FaimsWeb::Application.routes.draw do
   post 'project_exporter/:key/update', :to => 'project_exporter#update', :as => 'update_project_exporter'
   #get 'project_exporter/:key', :to => 'project_exporter#show', :as => 'project_exporter'
   post 'project_exporter/:key/delete', :to => 'project_exporter#delete', :as => 'delete_project_exporter'
+
+  # background jobs
+  get 'jobs', :to => 'jobs#index', :as => 'jobs'
 
   # android api
   get 'android/modules', :to => 'android#project_modules', :as => 'android_project_modules'
@@ -140,6 +145,9 @@ FaimsWeb::Application.routes.draw do
   get 'android/module/:key/app_files_info', :to => 'android#app_files_info', :as => 'android_app_files_info'
   get 'android/module/:key/app_file_download', :to => 'android#app_file_download', :as => 'android_app_file_download'
   post 'android/module/:key/app_file_upload', :to => 'android#app_file_upload', :as => 'android_app_file_upload'
+
+  get 'android/module/:key/signup', :to => 'android#user_signup', :as => 'android_user_signup'
+  post 'android/module/:key/signup', :to => 'android#user_signup', :as => 'android_user_signup'
 
   get 'thumbnail', :to => 'project_module_entity#thumbnail', :as => 'thumbnail'
 
