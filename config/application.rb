@@ -88,7 +88,7 @@ module FaimsWeb
 
     config.faims_version = '2.0'
 
-    config.server_has_update_url = 'https://raw.githubusercontent.com/FAIMS/faims-web/production/.deployment_version'
+    config.server_has_update_url = 'https://raw.githubusercontent.com/FAIMS/faims-web/sprint-5-upgrade-test/.deployment_version'
 
     config.server_has_update_file = Rails.root.join(".faims_has_updates").to_s
 
