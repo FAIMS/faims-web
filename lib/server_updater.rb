@@ -104,7 +104,7 @@ class ServerUpdater
     end
 
     def run_restart_script
-      system("sudo puppet apply --pluginsync #{Rails.root.join('puppet/restart.pp').to_s} --modulepath=#{Rails.root.join('puppet/modules').to_s}:$HOME/.puppet/modules --detailed-exitcodes >> #{Rails.root.join('log/puppet.log')} 2>&1 &")
+      system("sudo puppet apply --pluginsync #{Rails.root.join('puppet/restart.pp').to_s} --modulepath=#{Rails.root.join('puppet/modules').to_s}:$HOME/.puppet/modules --detailed-exitcodes >> #{Rails.root.join('log/puppet.log')} 2>&1")
     end
 
     def get_deployment_version
