@@ -21,8 +21,21 @@ class ServerUpdater
 
       request_json = get_deployment_version
       server_json = get_local_version
+      server_version = {}
+      request_version = {}
+      # Split version strings to major.minor.patch, pad array in case of null fields
+      server_version[:major], server_version[:minor], server_version[:patch] = server_json['version'].split('.').concat([0,0,0]).map {|x| x.to_i}
+      request_version[:major], request_version[:minor], request_version[:patch] = request_json['version'].split('.').concat([0,0,0]).map {|x| x.to_i}
+      has_updates = false
+      # Don't allow remote upgrade between major versions for safety
+      if server_version[:major] == request_version[:major]
+        if server_version[:minor] < request_version[:minor]
+          has_updates = true
+        elsif server_version[:minor] == request_version[:minor] && server_version[:patch] < request_version[:patch]
+          has_updates = true
+        end
+      end
 
-      has_updates = server_json['version'].to_f < request_json['version'].to_f
       if has_updates
         puts 'Found new updates.'
 
