@@ -106,6 +106,7 @@ class ServerUpdater
       Rails.application.config.server_has_update_url
     end
 
+    #trivial comment change for testing
     def faims_update_file
       Rails.env == 'test' ? Rails.root.join('tmp/.has_server_updates') : Rails.application.config.server_has_update_file
     end
