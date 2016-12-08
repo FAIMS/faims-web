@@ -1,0 +1,67 @@
+- title "Background Jobs"
+= breadcrumbs
+.well
+  = link_to "<i class='icon-refresh'></i> Refresh".html_safe, jobs_path, :class => "btn"
+.clear
+- if @jobs
+  %table.table#jobs
+    %tr
+      %th.span1 No.
+      %th.span2 Module / File name
+      %th.span2 Job type
+      %th.span2 Status
+      %th.span2 Output
+      %th.span2 Last Updated
+      - for job in @jobs
+        - if job.job_type == "Export Module"
+          - export = ProjectModuleExport.where(:background_job_id => job.id).first
+        %tr
+          %td.span1
+            = job.id
+          %td.span2
+            - if job.job_type == "Archive Module" || job.job_type == "Export Module"
+              %a{ :href => url_for(:controller => :project_modules, :action => :show, :id => job.project_module_id)}
+                = job.module_name
+            - else
+              = job.module_name
+          %td.span4
+            = job.job_type
+            - if job.job_type == "Export Module"
+              - if !export.blank?
+                = " using \"#{ProjectExporter.find_by_key(export.exporter).name}\""
+                - options = JSON.parse(export.options)
+                - if !options.blank?
+                  with options:
+                  %br
+                  - for key,values in options
+                    %span{ :class => "label label-info" }
+                      #{key}
+                    = values.blank? ? "(blank)" : nil
+                    - if values.is_a?(Array)
+                      - if values.compact.any?
+                        = values.compact.join(', ')
+                      - else
+                        (nil)
+                    - else
+                      = values.blank? ? "(nil)" : values
+                    %br
+          %td.span1
+            = job.status
+          %td.span1
+            - if job.status == 'Failed'
+              = job.failure_message.split("\n")[0]
+            - elsif job.status == 'Finished'
+              - if job.job_type == "Archive Module"
+                %a{ :href => url_for(:controller => :project_modules, :action => :download_project_module, :id => job.project_module_id)}
+                  = job.module_name + ".tar.bz2"
+                - if job.project_module.package_mgr.has_changes?
+                  %br
+                  (outdated)
+              - elsif job.job_type == "Export Module"
+                - if !export.blank?
+                  %a{ :href => url_for(:controller => :project_modules, :action => :show_export_results, :id => job.project_module_id, :uuid => export.uuid, :code => 1)}
+                    Exporter results
+                - else
+                  (outdated)
+          %td.span1
+            = job.updated_at.localtime.strftime("%d/%m/%Y %I:%M%p")

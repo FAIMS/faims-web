@@ -11,7 +11,24 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140522025319) do
+ActiveRecord::Schema.define(:version => 20160525033250) do
+
+  create_table "background_jobs", :force => true do |t|
+    t.string   "status"
+    t.integer  "project_module_id"
+    t.integer  "project_exporter_id"
+    t.string   "job_type"
+    t.integer  "user_id"
+    t.string   "module_name"
+    t.integer  "delayed_job_id"
+    t.string   "failure_message"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
+  end
+
+  add_index "background_jobs", ["project_exporter_id"], :name => "index_background_jobs_on_project_exporter_id"
+  add_index "background_jobs", ["project_module_id"], :name => "index_background_jobs_on_project_module_id"
+  add_index "background_jobs", ["user_id"], :name => "index_background_jobs_on_user_id"
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -36,6 +53,21 @@ ActiveRecord::Schema.define(:version => 20140522025319) do
     t.datetime "updated_at", :null => false
   end
 
+  create_table "project_module_exports", :force => true do |t|
+    t.integer  "project_module_id"
+    t.string   "exporter"
+    t.text     "options"
+    t.integer  "background_job_id"
+    t.text     "uuid"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  add_index "project_module_exports", ["background_job_id"], :name => "index_project_module_exports_on_background_job_id"
+  add_index "project_module_exports", ["exporter"], :name => "index_project_module_exports_on_exporter"
+  add_index "project_module_exports", ["options"], :name => "index_project_module_exports_on_options"
+  add_index "project_module_exports", ["project_module_id"], :name => "index_project_module_exports_on_project_module_id"
+
   create_table "project_modules", :force => true do |t|
     t.string   "name"
     t.datetime "created_at", :null => false
@@ -56,6 +88,16 @@ ActiveRecord::Schema.define(:version => 20140522025319) do
     t.integer "permission_id"
   end
 
+  create_table "user_modules", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "project_module_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  add_index "user_modules", ["project_module_id"], :name => "index_user_modules_on_project_module_id"
+  add_index "user_modules", ["user_id"], :name => "index_user_modules_on_user_id"
+
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "", :null => false
     t.string   "encrypted_password",     :default => "", :null => false
@@ -75,6 +117,7 @@ ActiveRecord::Schema.define(:version => 20140522025319) do
     t.integer  "role_id"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
+    t.text     "module_password"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

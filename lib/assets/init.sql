@@ -25,6 +25,7 @@ CREATE TABLE User (
   FName       TEXT NOT NULL,
   LName       TEXT NOT NULL,
   Email       TEXT NOT NULL,
+  Password    TEXT,
   UserDeleted BOOLEAN
 );
 

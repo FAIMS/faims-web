@@ -8,9 +8,9 @@ class ProjectModulesController < ProjectModuleBaseController
 
   def new
     page_crumbs :pages_home, :project_modules_index, :project_modules_create
-    
+
     @project_module = ProjectModule.new
-    
+
     @spatial_list = Database.get_spatial_ref_list
 
     create_project_module_tmp_dir
@@ -20,7 +20,7 @@ class ProjectModulesController < ProjectModuleBaseController
     page_crumbs :pages_home, :project_modules_index, :project_modules_create
 
     @project_module = ProjectModule.new
-    
+
     @spatial_list = Database.get_spatial_ref_list
 
     parse_settings_from_params(params)
@@ -50,7 +50,7 @@ class ProjectModulesController < ProjectModuleBaseController
       ensure
         FileUtils.remove_entry_secure @tmpdir
       end
-      
+
       redirect_to :project_modules
     else
       flash.now[:error] = 'Please correct the errors in this form.'
@@ -130,6 +130,10 @@ class ProjectModulesController < ProjectModuleBaseController
 
     if not @project_module.deleted
       @project_module.with_exclusive_lock do
+        @project_module.background_jobs.each {
+          |background_job|
+          background_job.destroy
+        }
         @project_module.deleted = true
         @project_module.save
 
@@ -231,9 +235,10 @@ class ProjectModulesController < ProjectModuleBaseController
     end
 
     if params[:project_module]
-      project_module = ProjectModule.upload_project_module(params[:project_module][:project_module_file].tempfile.to_path.to_s, current_user)
-      flash[:notice] = project_module.upgraded ? 'Module has been successfully upgraded from Faims 1.3 to Faims 2.0.' : 'Module has been successfully uploaded.'
-      redirect_to :project_modules
+      Delayed::Job.enqueue ProjectModule::ModuleUploadJob.new(params[:project_module][:project_module_file].original_filename, params[:project_module][:project_module_file].tempfile.to_path.to_s, current_user)
+      #project_module = ProjectModule.upload_project_module(params[:project_module][:project_module_file].tempfile.to_path.to_s, current_user)
+      #flash[:notice] = project_module.upgraded ? 'Module has been successfully upgraded from Faims 1.3 to Faims 2.0.' : 'Module has been successfully uploaded.'
+      redirect_to url_for(:controller => :jobs, :action => :index)
     else
       flash.now[:error] = 'Please upload an archive of the module.'
       render 'upload_project_module'
@@ -256,20 +261,23 @@ class ProjectModulesController < ProjectModuleBaseController
 
   def run_export_project_module
     @project_module = ProjectModule.find(params[:id])
-
     exporter = ProjectExporter.find_by_key(params[:exporter_key])
+
     input = params[:exporter_interface].present? ? params[:exporter_interface] : nil
     attributes = exporter.parse_interface_inputs(input)
 
-    download_dir = File.join("/tmp", "download_export_" + SecureRandom.uuid)
-    Dir.mkdir(download_dir)
-    markup_file = File.open(File.join("/tmp", "export_markup_" + SecureRandom.uuid), "w+").path
+    project_export = ProjectModuleExport.where( :project_module_id => @project_module, :exporter => exporter.key, :options => attributes.to_json ).first_or_create( :uuid => SecureRandom.uuid )
 
-    session[:export_download] = download_dir
-    session[:export_markup] = markup_file
+    download_dir = File.join(@project_module.get_path(:tmp_dir), "download_export_" + project_export.uuid)
+    begin
+      Dir.mkdir(download_dir)
+    rescue Errno::EEXIST => e
+    end
 
-    job = @project_module.delay.export_project_module(exporter, attributes, download_dir, markup_file)
-    render json: { result: 'waiting', jobid: job.id }
+    markup_file = File.open(File.join(@project_module.get_path(:tmp_dir), "export_markup_" + project_export.uuid), "w+").path
+
+    job = @project_module.delay.export_project_module(exporter, attributes, download_dir, markup_file, project_export.id)
+    render json: { result: 'waiting', jobid: job.id, uuid: project_export.uuid }
   end
 
   def check_export_status
@@ -287,13 +295,22 @@ class ProjectModulesController < ProjectModuleBaseController
   def show_export_results
     page_crumbs :pages_home, :project_modules_index, :project_modules_show, :project_modules_export, :project_modules_export_results
 
-    markup_file = session[:export_markup]
-    if markup_file.present? and File.exist? markup_file
-      markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(escape_html: true))
-      @markup = markdown.render(File.open(session[:export_markup], "r").read)
+    project_export = ProjectModuleExport.where( :uuid => params[:uuid] ).first
+
+    if project_export.blank?
+      flash[:error] = "Failed to export module"
+      redirect_to export_project_module_path(@project_module) and return
     end
 
-    download_entries = (Dir.entries(session[:export_download]) - %w{ . .. }) unless !File.exist? session[:export_download]
+    markup_file = File.open(File.join(@project_module.get_path(:tmp_dir), "export_markup_" + project_export.uuid), "r").path
+
+    if markup_file.present? and File.exist? markup_file
+      markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(escape_html: true))
+      @markup = markdown.render(File.open(markup_file).read)
+    end
+    download_dir = File.join(@project_module.get_path(:tmp_dir), "download_export_" + project_export.uuid)
+
+    download_entries = (Dir.entries(download_dir) - %w{ . .. }) unless !File.exist? download_dir
     @has_download_file = !download_entries.nil? && !download_entries.empty?
 
     if params[:code].to_i == 1
@@ -308,11 +325,15 @@ class ProjectModulesController < ProjectModuleBaseController
 
   def download_export_file
     @project_module = ProjectModule.find(params[:id])
-    if session[:export_download].present? and File.exist? session[:export_download] and File.directory? session[:export_download]
-      download_file = (Dir.entries(session[:export_download]) - %w{ . .. }).first
-      if download_file.present?
-        send_file File.join(session[:export_download], download_file), :filename => download_file
-        return
+    if project_export = ProjectModuleExport.where( :uuid => params[:uuid] ).first
+      download_dir = File.join(@project_module.get_path(:tmp_dir), "download_export_" + project_export.uuid)
+
+      if download_dir.present? and File.exist? download_dir and File.directory? download_dir
+        download_file = (Dir.entries(download_dir) - %w{ . .. }).first
+        if download_file.present?
+          send_file File.join(download_dir, download_file), :filename => download_file
+          return
+        end
       end
     end
     flash[:error] = 'Export file does not exist'
@@ -322,7 +343,7 @@ class ProjectModulesController < ProjectModuleBaseController
   def download_attached_file
     safe_send_file safe_root_join("modules/#{ProjectModule.find(params[:id]).key}/#{params[:path]}"), :filename => params[:name]
   end
-  
+
   private
 
   def create_project_module_tmp_dir
@@ -347,7 +368,7 @@ class ProjectModulesController < ProjectModuleBaseController
     validate_arch16n(tmpdir)
     validate_validation_schema(tmpdir)
     validate_css_style(tmpdir)
-    
+
     @project_module.errors.empty?
   end
 
@@ -405,7 +426,7 @@ class ProjectModulesController < ProjectModuleBaseController
   def create_temp_file(filename, upload, tmpdir)
     if filename == @project_module.get_name(:properties)
       create_arch16n_files(upload, tmpdir)
-      return 
+      return
     end
 
     File.open(upload.tempfile, 'r') do |upload_file|

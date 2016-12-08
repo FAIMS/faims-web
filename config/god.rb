@@ -60,12 +60,13 @@ God.watch do |w|
   w.log           = File.join(rails_root, 'log', 'merge_daemon.log')
 
   # restart if memory gets too high
-  w.transition(:up, :restart) do |on|
-    on.condition(:memory_usage) do |c|
-      c.above = 200.megabytes
-      c.times = 2
-    end
-  end
+  # temporarily disabled as it was hitting this threshold too readily - need to find a better way to handle this
+  # w.transition(:up, :restart) do |on|
+  #   on.condition(:memory_usage) do |c|
+  #     c.above = 200.megabytes
+  #     c.times = 2
+  #   end
+  # end
 
   # determine the state on startup
   w.transition(:init, { true => :up, false => :start }) do |on|
@@ -108,12 +109,13 @@ God.watch do |w|
   w.log           = File.join(rails_root, 'log', 'job_worker.log')
 
   # restart if memory gets too high
-  w.transition(:up, :restart) do |on|
-    on.condition(:memory_usage) do |c|
-      c.above = 200.megabytes
-      c.times = 2
-    end
-  end
+  # temporarily disabled as it was hitting this threshold too readily - need to find a better way to handle this
+  # w.transition(:up, :restart) do |on|
+  #   on.condition(:memory_usage) do |c|
+  #     c.above = 200.megabytes
+  #     c.times = 2
+  #   end
+  # end
 
   # determine the state on startup
   w.transition(:init, { true => :up, false => :start }) do |on|

@@ -12,13 +12,13 @@ def set_admin_password
 	    admin.activate
 	  end
     admin.password = admin.password_confirmation = input
+    admin.module_password = Base64.strict_encode64(Digest::SHA1.digest(input))
     if admin.valid?
       admin.save
       puts "Password changed!"
-      break 
+      break
     else
       puts 'Password error: ' + admin.errors[:password].join(' | ')
     end
   end
 end
-

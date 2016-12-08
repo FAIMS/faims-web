@@ -100,6 +100,7 @@ class UsersController < ApplicationController
     if @user.valid?
       @user.activate
       @user.role = Role.find_by_name('user')
+      @user.module_password = Base64.strict_encode64(Digest::SHA1.digest(params[:user][:password]))
       @user.save
 
       flash[:notice] = "New user created."
@@ -137,6 +138,12 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     @user.assign_attributes(params[:user])
     if @user.valid?
+      for user_module in UserModule.where(:user_id => @user)
+        project_module = ProjectModule.where(:deleted => [true,false]).find(user_module.project_module_id)
+        project_module.db.update_list_of_users(@user, @user.email)
+      end
+    end
+    if @user.valid?
       @user.save
       flash[:notice] = "Account details have been successfully updated."
       redirect_to users_path
@@ -157,6 +164,13 @@ class UsersController < ApplicationController
 
     @user = User.find(params[:id])
     @user.assign_attributes(params[:user])
+    @user.module_password = Base64.strict_encode64(Digest::SHA1.digest(params[:user][:password]))
+    if @user.valid?
+      for user_module in UserModule.where(:user_id => @user)
+        project_module = ProjectModule.where(:deleted => [true,false]).find(user_module.project_module_id)
+        project_module.db.update_list_of_users(@user, @user.email)
+      end
+    end
     if @user.valid?
       @user.save
       flash[:notice] = "Password has been updated."

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 3.2.19'
+gem 'rails', '~> 3.2.22'
 gem 'sqlite3'
 
 # Gems used only for assets and not required
@@ -25,7 +25,7 @@ group :development, :test do
   gem 'factory_girl_rails'
 
   # cucumber gems
-  gem 'cucumber'
+  gem 'cucumber', '>=1.3.18'
   gem 'capybara'
   gem 'database_cleaner'
   gem 'launchy' # So you can do Then show me the page
@@ -39,6 +39,8 @@ group :test do
   gem 'simplecov', '>=0.3.8', :require => false
   gem 'simplecov-rcov'
   gem 'email_spec'
+  gem 'minitest'
+  gem 'test-unit'
 end
 
 gem 'unicorn'

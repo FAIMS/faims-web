@@ -68,3 +68,10 @@ Capybara.match = :prefer_exact
 
 FileManager::LOCK_TIMEOUT = 1
 
+Capybara.register_driver :firefox do |app|
+	profile = Selenium::WebDriver::Firefox::Profile.new
+	profile['xpinstall.signatures.required'] = false
+	Capybara::Selenium::Driver.new(app, :browser => :firefox, :profile => profile)
+end
+
+Capybara.javascript_driver = :firefox
