@@ -52,6 +52,8 @@
               </xs:element>
             </xs:sequence>
             <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>
+            <xs:attribute name="semanticMapURLParent" type="xs:string" use="optional"/>
+            <xs:attribute name="semanticMapURLChild" type="xs:string" use="optional"/>
             <xs:attribute name="name" type="xs:string" use="optional"/>
             <xs:attribute name="type" type="xs:string" use="optional"/>
             <xs:anyAttribute processContents="skip"/>
@@ -76,6 +78,7 @@
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
+                  <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>
                   <xs:attribute name="type" type="xs:string" use="optional"/>
                   <xs:attribute name="name" type="xs:string" use="optional"/>
                   <xs:attribute name="minCardinality" type="xs:byte" use="optional"/>
@@ -87,7 +90,7 @@
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>
+            <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>            
             <xs:attribute name="name" type="xs:string" use="optional"/>
             <xs:attribute name="type" type="xs:string" use="optional"/>
           </xs:complexType>

@@ -40,8 +40,8 @@ VALUES('<xsl:value-of select="substring(generate-id(.),4)"/>', '<xsl:value-of se
 
           <xsl:for-each select="dataSchema/RelationshipElement">
             <li>
-INSERT INTO RelnType(RelnTypeID, RelnTypeName, RelnTypeDescription, RelnTypeCategory, Parent, Child)
-VALUES('<xsl:value-of select="substring(generate-id(.),4)"/>', '<xsl:value-of select="normalize-space(@name)"/>', '<xsl:value-of select="normalize-space(description)"/>', '<xsl:value-of select="normalize-space(@type)"/>', '<xsl:value-of select="normalize-space(parent)"/>', '<xsl:value-of select="normalize-space(child)"/>');
+INSERT INTO RelnType(RelnTypeID, RelnTypeName, RelnTypeDescription, RelnTypeCategory, Parent, Child<xsl:if test="@semanticMapURL != ''">, semanticMapURL</xsl:if><xsl:if test="@semanticMapURLParent != ''">, semanticMapURLParent</xsl:if><xsl:if test="@semanticMapURLChild != ''">, semanticMapURLChild</xsl:if>)
+VALUES('<xsl:value-of select="substring(generate-id(.),4)"/>', '<xsl:value-of select="normalize-space(@name)"/>', '<xsl:value-of select="normalize-space(description)"/>', '<xsl:value-of select="normalize-space(@type)"/>', '<xsl:value-of select="normalize-space(parent)"/>', '<xsl:value-of select="normalize-space(child)"/>'<xsl:if test="@semanticMapURL != ''">, '<xsl:value-of select="normalize-space(@semanticMapURL)"/>'</xsl:if><xsl:if test="@semanticMapURLParent != ''">, '<xsl:value-of select="normalize-space(@semanticMapURLParent)"/>'</xsl:if><xsl:if test="@semanticMapURLChild != ''">, '<xsl:value-of select="normalize-space(@semanticMapURLChild)"/>'</xsl:if>);
             </li>
             <ul>
               <xsl:for-each select="property">
@@ -55,8 +55,8 @@ VALUES('<xsl:value-of select="substring(generate-id(..),4)"/>', '<xsl:value-of s
 
           <xsl:for-each select="dataSchema/ArchaeologicalElement">
             <li>
-INSERT INTO AEntType (AEntTypeID, AEntTypeName, AEntTypeDescription)
-VALUES ('<xsl:value-of select="substring(generate-id(.),4)"/>', '<xsl:value-of select="normalize-space(@name | @type)"/>', '<xsl:value-of select="normalize-space(description)"/>');
+INSERT INTO AEntType (AEntTypeID, AEntTypeName, AEntTypeDescription<xsl:if test="@semanticMapURL != ''">, semanticMapURL</xsl:if>)
+VALUES ('<xsl:value-of select="substring(generate-id(.),4)"/>', '<xsl:value-of select="normalize-space(@name | @type)"/>', '<xsl:value-of select="normalize-space(description)"/>'<xsl:if test="@semanticMapURL != ''">, '<xsl:value-of select="normalize-space(@semanticMapURL)"/>'</xsl:if>);
             </li>
             <ul>
               <xsl:for-each select="property">
