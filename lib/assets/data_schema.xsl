@@ -97,7 +97,7 @@ INSERT INTO RelnType(                                       RelnTypeID
 <xsl:if test="@semanticMapRelationshipSKOS != ''">        , SemanticMapRelationshipSKOS</xsl:if>
 <xsl:if test="parent/@semanticMapURL != ''">              , semanticMapParentURL</xsl:if>
 <xsl:if test="parent/@semanticMapRelationshipSKOS != ''"> , SemanticMapParentRelationshipSKOS</xsl:if>
-<xsl:if test="child/@semanticMapURL != ''">               , semanticMapURLChild</xsl:if>
+<xsl:if test="child/@semanticMapURL != ''">               , semanticMapChildURL</xsl:if>
 <xsl:if test="child/@semanticMapRelationshipSKOS != ''">  , SemanticMapChildRelationshipSKOS</xsl:if>)
 VALUES(                                                     '<xsl:value-of select="substring(generate-id(.),4)"/>'
                                                           , '<xsl:value-of select="normalize-space(@name)"/>'
