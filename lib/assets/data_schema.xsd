@@ -6,6 +6,7 @@
         <xs:element maxOccurs="unbounded" minOccurs="0" ref="term"/>
       </xs:sequence>
       <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>
+      <xs:attribute name="semanticMapRelationshipSKOS" type="xs:string" use="optional"/>
       <xs:attribute name="pictureURL" type="xs:string" use="optional"/>
       <xs:attribute name="VocabDateFrom" type="xs:string" use="optional"/>
       <xs:attribute name="VocabDateTo" type="xs:string" use="optional"/>
@@ -24,8 +25,25 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element minOccurs="0" name="description" type="xs:string"/>
-              <xs:element minOccurs="0" name="parent" type="xs:string"/>
-              <xs:element minOccurs="0" name="child" type="xs:string"/>
+              <xs:element minOccurs="0" name="parent">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>
+                       <xs:attribute name="semanticMapRelationshipSKOS" type="xs:string" use="optional"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" name="child">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>
+                       <xs:attribute name="semanticMapRelationshipSKOS" type="xs:string" use="optional"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>              </xs:element>
               <xs:element maxOccurs="unbounded" minOccurs="0" name="property">
                 <xs:complexType>
                   <xs:sequence>
@@ -52,8 +70,7 @@
               </xs:element>
             </xs:sequence>
             <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>
-            <xs:attribute name="semanticMapURLParent" type="xs:string" use="optional"/>
-            <xs:attribute name="semanticMapURLChild" type="xs:string" use="optional"/>
+            <xs:attribute name="semanticMapRelationshipSKOS" type="xs:string" use="optional"/>
             <xs:attribute name="name" type="xs:string" use="optional"/>
             <xs:attribute name="type" type="xs:string" use="optional"/>
             <xs:anyAttribute processContents="skip"/>
@@ -79,6 +96,7 @@
                     </xs:element>
                   </xs:sequence>
                   <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>
+                  <xs:attribute name="semanticMapRelationshipSKOS" type="xs:string" use="optional"/>
                   <xs:attribute name="type" type="xs:string" use="optional"/>
                   <xs:attribute name="name" type="xs:string" use="optional"/>
                   <xs:attribute name="minCardinality" type="xs:byte" use="optional"/>
@@ -90,7 +108,8 @@
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>            
+            <xs:attribute name="semanticMapURL" type="xs:string" use="optional"/>
+            <xs:attribute name="semanticMapRelationshipSKOS" type="xs:string" use="optional"/>            
             <xs:attribute name="name" type="xs:string" use="optional"/>
             <xs:attribute name="type" type="xs:string" use="optional"/>
           </xs:complexType>
