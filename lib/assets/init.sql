@@ -53,7 +53,8 @@ CREATE TABLE AttributeKey (
   FormatString          TEXT,
   AttributeIsSync       BOOLEAN, -- this flags the attribute to sync to devices
   AppendCharacterString TEXT DEFAULT ' | ',
-  SemanticMapURL        TEXT
+  SemanticMapURL        TEXT,
+  SemanticMapPredicate TEXT
 );
 
 CREATE INDEX attributename ON attributekey (attributeid, attributename);
@@ -74,6 +75,7 @@ CREATE TABLE Vocabulary (
   AttributeID         INTEGER NOT NULL REFERENCES AttributeKey,
   VocabName           TEXT    NOT NULL, -- This is the human-visible part of vocab that forms lookup tables. It is likely to be Arch16nized.
   SemanticMapURL      TEXT,
+  SemanticMapPredicate TEXT,
   PictureURL          TEXT, -- relative path.
   VocabDescription    TEXT,
   VocabCountOrder     INTEGER,
@@ -83,7 +85,7 @@ CREATE TABLE Vocabulary (
   VocabDateAnnotation TEXT,
   VocabProvenance     TEXT,
   VocabDateCertainty  TEXT, -- this is effectively whether or not your dates are circa or not. It can be covered in note from in the Annotation, but might be nice to separate out.
-  VocabType           TEXT, -- This would be for associations other than ‘ParentVocab’. I can’t think of too many examples where this is relevant, but it’s basically an option giving you access to a meaningful analytic group or type, that you may not want to have to step through in a picture gallery. Eg for transfer prints, I might like to see a summary of % of Chinoiserie vs European landscape patterns as I work, but I don’t want to have to have to choose ‘Chinoiserie>Landscape>Landscape with Border>Willow’ each time I record something. In some respects this is stretching bow for ‘data entry’ fused with analysis, but if we’re tinkering with the schema it may not hurt. It might?
+  VocabType           TEXT, -- This would be for associations other than 'ParentVocab'. I can't think of too many examples where this is relevant, but it's basically an option giving you access to a meaningful analytic group or type, that you may not want to have to step through in a picture gallery. Eg for transfer prints, I might like to see a summary of % of Chinoiserie vs European landscape patterns as I work, but I don't want to have to have to choose 'Chinoiserie>Landscape>Landscape with Border>Willow' each time I record something. In some respects this is stretching bow for 'data entry' fused with analysis, but if we're tinkering with the schema it may not hurt. It might?
   VocabMaker          TEXT, -- This is standard in typologies for historical archaeology but not as important to other archaeologies. As above, it may be nice to see these sorts of analyses as you work, but likely better suited to post-ex analysis than data recording.
   ParentVocabID       INTEGER REFERENCES Vocabulary(VocabID)
 );
@@ -101,8 +103,10 @@ CREATE INDEX vocabAttIndex ON vocabulary (attributeid, vocabid, vocabname);
 CREATE TABLE AEntType (
   AEntTypeID          INTEGER PRIMARY KEY,
   AEntTypeName        TEXT NOT NULL, -- table name
-  AEntTypeCategory    TEXT, -- I'm honestly not sure what we use this for.
+  SemanticMapURL      TEXT,
+  SemanticMapPredicate TEXT,
   AEntTypeDescription TEXT -- human description
+
 );
 
 CREATE INDEX aenttypename ON aenttype (aenttypeid, aenttypename);
@@ -117,10 +121,16 @@ CREATE TABLE RelnType (
   RelnTypeDescription TEXT, -- human description explaining purpose of the relationship type
   RelnTypeCategory    TEXT, -- This is, actually, important. It identifies the *category* of relationship-meatphor: hierarchial, container, or bidirectional.
   Parent              TEXT, -- This is the text string that serves to identify, for categories of type hierarchial, the "participatesverb"
-								  -- that identifies a parent. It should be possible, using this, to select all parents in a specific
-								  -- hierarchial relationship by constraining the search to this term.
-  Child               TEXT -- As above, but for the other side of the hierarchial relationship. Relationships of other category/metaphor do not need
-								 -- participation verbs
+                  -- that identifies a parent. It should be possible, using this, to select all parents in a specific
+                  -- hierarchial relationship by constraining the search to this term.
+  Child               TEXT, -- As above, but for the other side of the hierarchial relationship. Relationships of other category/metaphor do not need
+                 -- participation verbs
+  SemanticMapURL      TEXT,
+  SemanticMapPredicate TEXT,                 
+  SemanticMapParentURL      TEXT,                 
+  SemanticMapParentRelationshipSKOS TEXT,
+  SemanticMapChildURL      TEXT,   
+  SemanticMapChildRelationshipSKOS TEXT             
 );
 
 
@@ -129,8 +139,8 @@ CREATE TABLE IdealAEnt (
   AttributeID     INTEGER REFERENCES AttributeKey,
   AEntDescription TEXT, -- human description
   IsIdentifier    BOOLEAN, -- This is the means by which a designer identifies an attribute in a given aentType as an identifier.
-									 -- an identifier in this instance does not enforce not null nor uniqueness. It merely serves to identify
-									 -- what subset of rows
+                   -- an identifier in this instance does not enforce not null nor uniqueness. It merely serves to identify
+                   -- what subset of rows
   MinCardinality  INTEGER, -- It is theoretically possible to use these to power script-level validation
   MaxCardinality  INTEGER,
   AEntCountOrder  INTEGER,
