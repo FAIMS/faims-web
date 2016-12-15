@@ -5,7 +5,7 @@
         <xs:element minOccurs="0" name="description" type="xs:string"/>
         <xs:element maxOccurs="unbounded" minOccurs="0" ref="term"/>
       </xs:sequence>
-      <xs:attribute name="SemanticMapObjectURI" type="xs:string" use="optional"/>
+      <xs:attribute name="SemanticMapURL" type="xs:string" use="optional"/>
       <xs:attribute name="SemanticMapPredicate" type="xs:string" use="optional"/>
       <xs:attribute name="pictureURL" type="xs:string" use="optional"/>
       <xs:attribute name="VocabDateFrom" type="xs:string" use="optional"/>
@@ -29,7 +29,7 @@
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
-                      <xs:attribute name="SemanticMapObjectURI" type="xs:string" use="optional"/>
+                      <xs:attribute name="SemanticMapURL" type="xs:string" use="optional"/>
                        <xs:attribute name="SemanticMapPredicate" type="xs:string" use="optional"/>
                     </xs:extension>
                   </xs:simpleContent>
@@ -39,7 +39,7 @@
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
-                      <xs:attribute name="SemanticMapObjectURI" type="xs:string" use="optional"/>
+                      <xs:attribute name="SemanticMapURL" type="xs:string" use="optional"/>
                        <xs:attribute name="SemanticMapPredicate" type="xs:string" use="optional"/>
                     </xs:extension>
                   </xs:simpleContent>
@@ -69,7 +69,7 @@
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute name="SemanticMapObjectURI" type="xs:string" use="optional"/>
+            <xs:attribute name="SemanticMapURL" type="xs:string" use="optional"/>
             <xs:attribute name="SemanticMapPredicate" type="xs:string" use="optional"/>
             <xs:attribute name="name" type="xs:string" use="optional"/>
             <xs:attribute name="type" type="xs:string" use="optional"/>
@@ -95,7 +95,7 @@
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
-                  <xs:attribute name="SemanticMapObjectURI" type="xs:string" use="optional"/>
+                  <xs:attribute name="SemanticMapURL" type="xs:string" use="optional"/>
                   <xs:attribute name="SemanticMapPredicate" type="xs:string" use="optional"/>
                   <xs:attribute name="type" type="xs:string" use="optional"/>
                   <xs:attribute name="name" type="xs:string" use="optional"/>
@@ -108,7 +108,7 @@
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute name="SemanticMapObjectURI" type="xs:string" use="optional"/>
+            <xs:attribute name="SemanticMapURL" type="xs:string" use="optional"/>
             <xs:attribute name="SemanticMapPredicate" type="xs:string" use="optional"/>            
             <xs:attribute name="name" type="xs:string" use="optional"/>
             <xs:attribute name="type" type="xs:string" use="optional"/>

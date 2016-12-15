@@ -53,7 +53,7 @@ CREATE TABLE AttributeKey (
   FormatString          TEXT,
   AttributeIsSync       BOOLEAN, -- this flags the attribute to sync to devices
   AppendCharacterString TEXT DEFAULT ' | ',
-  SemanticMapObjectURI        TEXT,
+  SemanticMapURL        TEXT,
   SemanticMapPredicate TEXT
 );
 
@@ -74,7 +74,7 @@ CREATE TABLE Vocabulary (
   VocabID             INTEGER PRIMARY KEY,
   AttributeID         INTEGER NOT NULL REFERENCES AttributeKey,
   VocabName           TEXT    NOT NULL, -- This is the human-visible part of vocab that forms lookup tables. It is likely to be Arch16nized.
-  SemanticMapObjectURI      TEXT,
+  SemanticMapURL      TEXT,
   SemanticMapPredicate TEXT,
   PictureURL          TEXT, -- relative path.
   VocabDescription    TEXT,
@@ -103,7 +103,7 @@ CREATE INDEX vocabAttIndex ON vocabulary (attributeid, vocabid, vocabname);
 CREATE TABLE AEntType (
   AEntTypeID          INTEGER PRIMARY KEY,
   AEntTypeName        TEXT NOT NULL, -- table name
-  SemanticMapObjectURI      TEXT,
+  SemanticMapURL      TEXT,
   SemanticMapPredicate TEXT,
   AEntTypeDescription TEXT -- human description
 
@@ -125,7 +125,7 @@ CREATE TABLE RelnType (
                   -- hierarchial relationship by constraining the search to this term.
   Child               TEXT, -- As above, but for the other side of the hierarchial relationship. Relationships of other category/metaphor do not need
                  -- participation verbs
-  SemanticMapObjectURI      TEXT,
+  SemanticMapURL      TEXT,
   SemanticMapPredicate TEXT,                 
   SemanticMapParentURL      TEXT,                 
   SemanticMapParentRelationshipSKOS TEXT,

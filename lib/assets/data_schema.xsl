@@ -28,7 +28,7 @@ INSERT INTO AttributeKey(                           AttributeID
 <xsl:if test="@sync = 'true'">                    , AttributeIsSync</xsl:if>
 <xsl:if test="@thumbnail = 'true'">               , AttributeUseThumbnail</xsl:if>
 <xsl:if test="formatString != ''">                , formatString</xsl:if>
-<xsl:if test="@SemanticMapObjectURI != ''">             , SemanticMapObjectURI</xsl:if> 
+<xsl:if test="@SemanticMapURL != ''">             , SemanticMapURL</xsl:if> 
 <xsl:if test="@SemanticMapPredicate != ''">, SemanticMapPredicate</xsl:if> 
 <xsl:if test="appendCharacterString != ''">       , appendCharacterString</xsl:if>)
   VALUES(                                           '<xsl:value-of select="substring(generate-id(key('properties',@name)),4)"/>'
@@ -39,7 +39,7 @@ INSERT INTO AttributeKey(                           AttributeID
 <xsl:if test="@sync = 'true'">                    , '1'</xsl:if>
 <xsl:if test="@thumbnail = 'true'">               , '1'</xsl:if>
 <xsl:if test="formatString != ''">                , '<xsl:value-of select="formatString"/>'</xsl:if>
-<xsl:if test="@SemanticMapObjectURI != ''">             , '<xsl:value-of select="normalize-space(@SemanticMapObjectURI)"/>'</xsl:if>
+<xsl:if test="@SemanticMapURL != ''">             , '<xsl:value-of select="normalize-space(@SemanticMapURL)"/>'</xsl:if>
 <xsl:if test="@SemanticMapPredicate != ''">, '<xsl:value-of select="normalize-space(@SemanticMapPredicate)"/>'</xsl:if>
 <xsl:if test="appendCharacterString != ''">       , '<xsl:value-of select="appendCharacterString"/>'</xsl:if>);
             </li>
@@ -52,7 +52,7 @@ INSERT INTO Vocabulary (                            vocabId
                                                   , vocabname
 <xsl:if test="@pictureURL != ''">                 , pictureURL</xsl:if>
 <xsl:if test="description != ''">                 , vocabdescription</xsl:if>
-<xsl:if test="@SemanticMapObjectURI != ''">             , SemanticMapObjectURI</xsl:if>
+<xsl:if test="@SemanticMapURL != ''">             , SemanticMapURL</xsl:if>
 <xsl:if test="@SemanticMapPredicate != ''">, SemanticMapPredicate</xsl:if>
 <xsl:if test="ancestor::term">                    , parentVocabID</xsl:if>
 <xsl:if test="@VocabDateFrom">                    , VocabDateFrom</xsl:if>
@@ -68,7 +68,7 @@ INSERT INTO Vocabulary (                            vocabId
                                                   , '<xsl:value-of select="normalize-space(./text())"/>'
 <xsl:if test="@pictureURL != ''">                 , '<xsl:value-of select="normalize-space(@pictureURL)"/>'</xsl:if>
 <xsl:if test="description != ''">                 , '<xsl:value-of select="normalize-space(description)"/>'</xsl:if>
-<xsl:if test="@SemanticMapObjectURI != ''">             , '<xsl:value-of select="normalize-space(@SemanticMapObjectURI)"/>'</xsl:if>
+<xsl:if test="@SemanticMapURL != ''">             , '<xsl:value-of select="normalize-space(@SemanticMapURL)"/>'</xsl:if>
 <xsl:if test="@SemanticMapPredicate != ''">, '<xsl:value-of select="normalize-space(@SemanticMapPredicate)"/>'</xsl:if>
 <xsl:if test="ancestor::term">                    , <xsl:value-of select="substring(generate-id(..),4)"/></xsl:if>
 <xsl:if test="@VocabDateFrom != ''">              , '<xsl:value-of select="normalize-space(@VocabDateFrom)"/>'</xsl:if>
@@ -93,11 +93,11 @@ INSERT INTO RelnType(                                       RelnTypeID
                                                           , RelnTypeCategory
                                                           , Parent
                                                           , Child
-<xsl:if test="@SemanticMapObjectURI != ''">                     , SemanticMapObjectURI</xsl:if>
+<xsl:if test="@SemanticMapURL != ''">                     , SemanticMapURL</xsl:if>
 <xsl:if test="@SemanticMapPredicate != ''">        , SemanticMapPredicate</xsl:if>
-<xsl:if test="parent/@SemanticMapObjectURI != ''">              , semanticMapParentURL</xsl:if>
+<xsl:if test="parent/@SemanticMapURL != ''">              , semanticMapParentURL</xsl:if>
 <xsl:if test="parent/@SemanticMapPredicate != ''"> , SemanticMapParentRelationshipSKOS</xsl:if>
-<xsl:if test="child/@SemanticMapObjectURI != ''">               , semanticMapChildURL</xsl:if>
+<xsl:if test="child/@SemanticMapURL != ''">               , semanticMapChildURL</xsl:if>
 <xsl:if test="child/@SemanticMapPredicate != ''">  , SemanticMapChildRelationshipSKOS</xsl:if>)
 VALUES(                                                     '<xsl:value-of select="substring(generate-id(.),4)"/>'
                                                           , '<xsl:value-of select="normalize-space(@name)"/>'
@@ -105,11 +105,11 @@ VALUES(                                                     '<xsl:value-of selec
                                                           , '<xsl:value-of select="normalize-space(@type)"/>'
                                                           , '<xsl:value-of select="normalize-space(parent)"/>'
                                                           , '<xsl:value-of select="normalize-space(child)"/>'
-<xsl:if test="@SemanticMapObjectURI != ''">                     , '<xsl:value-of select="normalize-space(@SemanticMapObjectURI)"/>'</xsl:if>
+<xsl:if test="@SemanticMapURL != ''">                     , '<xsl:value-of select="normalize-space(@SemanticMapURL)"/>'</xsl:if>
 <xsl:if test="@SemanticMapPredicate != ''">        , '<xsl:value-of select="normalize-space(@SemanticMapPredicate)"/>'</xsl:if>
-<xsl:if test="parent/@SemanticMapObjectURI != ''">              , '<xsl:value-of select="normalize-space(parent/@SemanticMapObjectURI)"/>'</xsl:if>
+<xsl:if test="parent/@SemanticMapURL != ''">              , '<xsl:value-of select="normalize-space(parent/@SemanticMapURL)"/>'</xsl:if>
 <xsl:if test="parent/@SemanticMapPredicate != ''"> , '<xsl:value-of select="normalize-space(parent/@SemanticMapPredicate)"/>'</xsl:if>
-<xsl:if test="child/@SemanticMapObjectURI != ''">               , '<xsl:value-of select="normalize-space(child/@SemanticMapObjectURI)"/>'</xsl:if>
+<xsl:if test="child/@SemanticMapURL != ''">               , '<xsl:value-of select="normalize-space(child/@SemanticMapURL)"/>'</xsl:if>
 <xsl:if test="child/@SemanticMapPredicate != ''">  , '<xsl:value-of select="normalize-space(child/@SemanticMapPredicate)"/>'</xsl:if>);
             </li>
             <ul>
@@ -135,13 +135,13 @@ VALUES(           '<xsl:value-of select="substring(generate-id(..),4)"/>'
 INSERT INTO AEntType (                              AEntTypeID
                                                   , AEntTypeName
                                                   , AEntTypeDescription
-<xsl:if test="@SemanticMapObjectURI != ''">             , SemanticMapObjectURI</xsl:if>
+<xsl:if test="@SemanticMapURL != ''">             , SemanticMapURL</xsl:if>
 <xsl:if test="@SemanticMapPredicate != ''">, SemanticMapPredicate</xsl:if>
 )
 VALUES (                                            '<xsl:value-of select="substring(generate-id(.),4)"/>'
                                                   , '<xsl:value-of select="normalize-space(@name | @type)"/>'
                                                   , '<xsl:value-of select="normalize-space(description)"/>'
-<xsl:if test="@SemanticMapObjectURI != ''">             , '<xsl:value-of select="normalize-space(@SemanticMapObjectURI)"/>'</xsl:if>
+<xsl:if test="@SemanticMapURL != ''">             , '<xsl:value-of select="normalize-space(@SemanticMapURL)"/>'</xsl:if>
 <xsl:if test="@SemanticMapPredicate != ''">, '<xsl:value-of select="normalize-space(@SemanticMapPredicate)"/>'</xsl:if>);
             </li>
             <ul>
