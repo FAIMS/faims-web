@@ -15,15 +15,15 @@ sudo apt-get -y install git puppet libreadline-dev software-properties-common
 
 # Install puppet modules
 if [ ! -d "$HOME/.puppet/modules/stdlib" ]; then
-    puppet module install puppetlabs-stdlib
+    puppet module install puppetlabs-stdlib --version 4.15.0
 fi
 
 if [ ! -d "$HOME/.puppet/modules/apt" ]; then
-    puppet module install puppetlabs-apt
+    puppet module install puppetlabs-apt --version 2.3.0
 fi
 
 if [ ! -d "$HOME/.puppet/modules/vcsrepo" ]; then
-    puppet module install puppetlabs-vcsrepo
+    puppet module install puppetlabs-vcsrepo --version 1.4.0
 fi
 
 # Clone webapp
