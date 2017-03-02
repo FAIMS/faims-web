@@ -23,7 +23,7 @@ if [ ! -d "$HOME/.puppet/modules/apt" ]; then
 fi
 
 if [ ! -d "$HOME/.puppet/modules/vcsrepo" ]; then
-    puppet module install puppetlabs-vcsrepo
+    puppet module install puppetlabs-vcsrepo --version 1.4.0
 fi
 
 # Clone webapp
