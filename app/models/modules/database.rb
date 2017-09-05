@@ -172,6 +172,14 @@ class Database
     uuids
   end
 
+  def total_arch_entities
+    @db.get_first_value(WebQuery.total_arch_entities)
+  end
+
+  def total_latest_non_deleted_relationships
+    @db.get_first_value(WebQuery.total_latest_non_deleted_relationships)
+  end
+
   def total_search_arch_entity(type, user, query, show_deleted)
     params = {
         type:type,

@@ -149,6 +149,9 @@ FaimsWeb::Application.routes.draw do
   get 'android/module/:key/signup', :to => 'android#user_signup', :as => 'android_user_signup'
   post 'android/module/:key/signup', :to => 'android#user_signup', :as => 'android_user_signup'
 
+  # forced sync
+  get 'android/module/:key/db_record_count', :to => 'android#db_record_count', :as => 'android_project_module_db_record_count'
+
   get 'thumbnail', :to => 'project_module_entity#thumbnail', :as => 'thumbnail'
 
   # server
