@@ -15,7 +15,7 @@ module ExporterHelper
     when "checkbox"
       render_checkbox(config, form)
     else
-      logger.deug "type #{config['type']} not known"
+      logger.debug "type #{config['type']} not known"
     end
   end
 
