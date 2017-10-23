@@ -161,6 +161,16 @@ class ProjectProcessor
                 end
               end
               attributes[field['label']] = values
+            elsif field['type'] == 'upload'
+              if input[field['label']].class == Array
+                files = []
+                for elem in input[field['label']]
+                  files << { filename: elem.original_filename, tempfile: elem.tempfile.path }
+                end
+                attributes[field['label']] = files
+              else
+                attributes[field['label']] = {input[field['label']].original_filename => input[field['label']].tempfile.path}
+              end
             else
               attributes[field['label']] = input[field['label']]
             end

@@ -16,6 +16,8 @@ module ProcessorHelper
       render_checkbox(config, form)
     when "button"
       render_button(config, form)
+    when "upload"
+      render_upload(config, form)
     else
       logger.debug "type #{config['type']} not known"
     end
@@ -45,5 +47,9 @@ module ProcessorHelper
       onclick: "$('#run_#{config["script"].gsub(".","_")}').val(true); $('input[name=commit]').click()"
     ) +
     hidden_field_tag( "run[#{config["script"].gsub(".","_")}]", false)
+  end
+
+  def render_upload(config, form)
+    form.file_field( config['label'], multiple: true)
   end
 end

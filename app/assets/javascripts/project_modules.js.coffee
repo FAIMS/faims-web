@@ -159,7 +159,6 @@ check_export = (jobid) ->
 show_process_modal_dialog = ->
   $("[id^=process_module_]").click(
     ->
-      console.debug('click');
       $('#loading').dialog({
         autoOpen: false,
         closeOnEscape: false,
@@ -174,15 +173,16 @@ show_process_modal_dialog = ->
       $('#loading').removeClass('hidden')
       $('#loading').dialog('open')
       form = $(this).attr('id').replace("process_module_","")
-      postData = $("#" + form).find('form').serializeArray()
+      postData = new FormData($("#" + form).find('form')[0]);
       if $("#" + form).find("*").filter('[required]:visible').filter(-> return $(this).val().trim() == "").size() != 0
         $('#loading').addClass('hidden')
         $('#loading').dialog('destroy')
         return
       $.ajax $(this).attr('href'),
         type: 'POST'
-        dataType: 'json'
         data: postData
+        contentType: false
+        processData: false
         success: (data, textStatus, jqXHR) ->
           if data.result == "success" || data.result == "failure"
             window.location = data.url
