@@ -7,19 +7,23 @@ module ProcessorHelper
   end
 
   def render_processor_interface_item(config, form)
-    case config["type"]
-    when "text"
-      render_textbox(config, form)
-    when "dropdown"
-      render_dropdown(config, form)
-    when "checkbox"
-      render_checkbox(config, form)
-    when "button"
-      render_button(config, form)
-    when "upload"
-      render_upload(config, form)
+    if config["html"] && !config["html"].blank?
+      raw config["html"]
     else
-      logger.debug "type #{config['type']} not known"
+      case config["type"]
+      when "text"
+        render_textbox(config, form)
+      when "dropdown"
+        render_dropdown(config, form)
+      when "checkbox"
+        render_checkbox(config, form)
+      when "button"
+        render_button(config, form)
+      when "upload"
+        render_upload(config, form)
+      else
+        logger.debug "type #{config['type']} not known"
+      end
     end
   end
 
