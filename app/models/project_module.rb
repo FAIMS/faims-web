@@ -72,8 +72,8 @@ class ProjectModule < ActiveRecord::Base
                   :has_sensitive_data,
                   :tmpdir
 
-  validates :name, :presence => true, :length => {:maximum => 255},
-            :format => {:with => /\A(\s*[^\/\\\?\%\*\:\|\"\'\<\>\.]+\s*)*\z/i} # do not allow file name reserved characters
+  validates :name, :presence => true, :length => {:maximum => 255}#,
+            #:format => {:with => /\A(\s*[^\/\\\?\%\*\:\|\"\'\<\>\.]+\s*)*\z/i} # do not allow file name reserved characters
 
   validates :key, :presence => true, :uniqueness => true
 
