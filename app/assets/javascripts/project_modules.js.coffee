@@ -106,6 +106,7 @@ check_archive = (jobid) ->
 show_export_modal_dialog = ->
   $("[id^=export_module_]").click(
     ->
+      console.debug('click');
       $('#loading').dialog({
         autoOpen: false,
         closeOnEscape: false,
@@ -152,6 +153,59 @@ check_export = (jobid) ->
         window.location = data.url
       else
         setTimeout (-> check_export(jobid)), 5000
+      return
+  return
+
+show_process_modal_dialog = ->
+  $("[id^=process_module_]").click(
+    ->
+      $('#loading').dialog({
+        autoOpen: false,
+        closeOnEscape: false,
+        draggable: false,
+        title: "Message",
+        width: 300,
+        minHeight: 50,
+        modal: true,
+        buttons: {},
+        resizable: false
+      });
+      $('#loading').removeClass('hidden')
+      $('#loading').dialog('open')
+      form = $(this).attr('id').replace("process_module_","")
+      postData = new FormData($("#" + form).find('form')[0]);
+      if $("#" + form).find("*").filter('[required]:visible').filter(-> return $(this).val().trim() == "").size() != 0
+        $('#loading').addClass('hidden')
+        $('#loading').dialog('destroy')
+        return
+      $.ajax $(this).attr('href'),
+        type: 'POST'
+        data: postData
+        contentType: false
+        processData: false
+        success: (data, textStatus, jqXHR) ->
+          if data.result == "success" || data.result == "failure"
+            window.location = data.url
+          else if data.result == "waiting"
+            window.location = "/jobs"
+            #setTimeout (-> check_process(data.jobid)), 5000
+          else
+            alert("Error trying to process module. Please refresh page")
+          return
+      return false
+  )
+  return
+
+check_process = (jobid) ->
+  $.ajax $('#check-process').val(),
+    type: 'GET'
+    dataType: 'json'
+    data: {jobid: jobid}
+    success: (data, textStatus, jqXHR) ->
+      if data.result != "waiting"
+        window.location = data.url
+      else
+        setTimeout (-> check_process(jobid)), 5000
       return
   return
 
@@ -1122,6 +1176,7 @@ $(document).ready(
     show_upload_modal_dialog()
     show_archive_modal_dialog()
     show_export_modal_dialog()
+    show_process_modal_dialog()
     compare_records()
     bulk_delete_restore_entities()
     bulk_delete_restore_related_entities()

@@ -1,7 +1,7 @@
 !!!
 %html
   %head
-    %title 
+    %title
       FAIMS
       = " - #{yield :title}"
     = stylesheet_link_tag    "application", :media => "all"
@@ -20,7 +20,9 @@
               %li= link_to "Jobs", jobs_path, id: "background-jobs-tab"
               %li= link_to "User Management", users_path
               - if current_user.admin?
-                %li= link_to "Plugin Management", project_exporters_path
+                %li
+                  -#%li= link_to "Plugin Management", project_exporters_path
+                  = render "layouts/plugin_menu"
               %li= link_to (ServerUpdater.has_server_updates ? "Updates Available!" : "Check for Updates"), update_server_path
           = render 'layouts/user_menu'
 

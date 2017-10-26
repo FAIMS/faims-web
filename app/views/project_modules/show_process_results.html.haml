@@ -1,0 +1,10 @@
+-title 'Process Module Results'
+= breadcrumbs
+
+.well
+  - if @markup and !@markup.empty?
+    = raw(@markup)
+  - else
+    Nothing to display
+- if @has_download_file
+  = link_to "Download file", download_process_file_path( :uuid => params[:uuid]), :class => 'btn-primary btn'

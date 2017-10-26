@@ -340,6 +340,99 @@ class ProjectModulesController < ProjectModuleBaseController
     redirect_to export_project_module_path(@project_module)
   end
 
+
+  # module processor
+  def process_project_module
+    page_crumbs :pages_home, :project_modules_index, :project_modules_show, :project_modules_process
+
+    @processors = ProjectProcessor.all.sort_by &:name
+
+    render 'process_project_module'
+  end
+
+  def run_process_project_module
+    @project_module = ProjectModule.find(params[:id])
+    processor = ProjectProcessor.find_by_key(params[:processor_key])
+
+    input = params[:processor_interface].present? ? params[:processor_interface] : nil
+    action = params[:processor_action].present? ? params[:processor_action] : nil
+    attributes = processor.parse_action_interface_inputs(action,input)
+
+    project_process = ProjectModuleProcess.where( :project_module_id => @project_module, :processor => processor.key, :action => action, :options => attributes.to_json ).first_or_create( :uuid => SecureRandom.uuid )
+
+    download_dir = File.join(@project_module.get_path(:tmp_dir), "download_process_" + project_process.uuid)
+    begin
+      Dir.mkdir(download_dir)
+    rescue Errno::EEXIST => e
+    end
+
+    markup_file = File.open(File.join(@project_module.get_path(:tmp_dir), "process_markup_" + project_process.uuid), "w+").path
+
+    job = @project_module.delay.process_project_module(processor, action, attributes, download_dir, markup_file, project_process.id)
+    render json: { result: 'waiting', jobid: job.id, uuid: project_process.uuid }
+  end
+
+  def check_process_status
+    @project_module = ProjectModule.find(params[:id])
+
+    job = Delayed::Job.find_by_id(params[:jobid])
+    code = 1 if job.nil?
+    if !job.nil? and job.last_error?
+      logger.error job.last_error
+      job.destroy
+    end
+    render json: { result: job.nil? ? 'success' : (job.last_error? ? 'failure' : 'waiting'), url: show_process_results_path(@project_module, :code => code) }
+  end
+
+  def show_process_results
+    page_crumbs :pages_home, :project_modules_index, :project_modules_show, :project_modules_process, :project_modules_process_results
+
+    project_process = ProjectModuleProcess.where( :uuid => params[:uuid] ).first
+
+    if project_process.blank?
+      flash[:error] = "Failed to process module"
+      redirect_to process_project_module_path(@project_module) and return
+    end
+
+    markup_file = File.open(File.join(@project_module.get_path(:tmp_dir), "process_markup_" + project_process.uuid), "r").path
+
+    if markup_file.present? and File.exist? markup_file
+      markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(escape_html: true))
+      @markup = markdown.render(File.open(markup_file).read)
+    end
+    download_dir = File.join(@project_module.get_path(:tmp_dir), "download_process_" + project_process.uuid)
+
+    download_entries = (Dir.entries(download_dir) - %w{ . .. }) unless !File.exist? download_dir
+    @has_download_file = !download_entries.nil? && !download_entries.empty?
+
+    if params[:code].to_i == 1
+      flash.now[:notice] = "Module processed successfully"
+    else
+      flash[:error] = "Failed to process module"
+      redirect_to process_project_module_path(@project_module) and return
+    end
+
+    render 'show_process_results'
+  end
+
+  def download_process_file
+    @project_module = ProjectModule.find(params[:id])
+    if project_process = ProjectModuleProcess.where( :uuid => params[:uuid] ).first
+      download_dir = File.join(@project_module.get_path(:tmp_dir), "download_process_" + project_process.uuid)
+
+      if download_dir.present? and File.exist? download_dir and File.directory? download_dir
+        download_file = (Dir.entries(download_dir) - %w{ . .. }).first
+        if download_file.present?
+          send_file File.join(download_dir, download_file), :filename => download_file
+          return
+        end
+      end
+    end
+    flash[:error] = 'Process file does not exist'
+    redirect_to process_project_module_path(@project_module)
+  end
+###
+
   def download_attached_file
     safe_send_file safe_root_join("modules/#{ProjectModule.find(params[:id]).key}/#{params[:path]}"), :filename => params[:name]
   end

@@ -18,7 +18,9 @@ module ProjectModuleBreadCrumbs
             :project_modules_files => {title: 'Files', url: project_module ? project_module_file_list_path(project_module) : nil},
             :project_modules_deleted => {title: 'Deleted', url: nil},
             :project_modules_export => {title: 'Export', url: project_module ? export_project_module_path(project_module) : nil},
+            :project_modules_process => {title: 'Process', url: project_module ? process_project_module_path(project_module) : nil},
             :project_modules_export_results => {title: 'Results', url: nil},
+            :project_modules_process_results => {title: 'Results', url: nil},
 
             :project_modules_search_arch_ent => {title: 'Search Entity', url: project_module ? search_arch_ent_records_path(project_module, search_params) : nil},
             :project_modules_compare_arch_ent => {title: 'Compare', url: project_module ? compare_arch_ents_path(project_module) : nil},
