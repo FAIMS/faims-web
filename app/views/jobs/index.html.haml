@@ -15,10 +15,16 @@
       - for job in @jobs
         - if job.job_type == "Export Module"
           - export = ProjectModuleExport.where(:background_job_id => job.id).first
-          - exporter = ProjectExporter.find_by_key(export.exporter).name
+          - if export.nil?
+            - next
+          - else
+            - exporter = ProjectExporter.find_by_key(export.exporter).name
         - elsif job.job_type == "Process Module"
           - export = ProjectModuleProcess.where(:background_job_id => job.id).first
-          - exporter = ProjectProcessor.find_by_key(export.processor).name unless export.blank?
+          - if export.nil?
+            - next
+          - else
+            - exporter = ProjectProcessor.find_by_key(export.processor).name unless export.blank?
         %tr
           %td.span1
             = job.id
