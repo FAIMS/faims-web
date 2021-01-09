@@ -29,7 +29,7 @@ class webapp {
     command     => "su - ${webapp_user} -c \"cd ${app_root} && bundle install\"",
     unless      => "su - ${webapp_user} -c \"cd ${app_root} && bundle check\"",
     logoutput   => "on_failure",
-    timeout     => 1800,
+    timeout     => 3600,
     require     => Exec["install bundler gem"]
   }
 
@@ -39,7 +39,7 @@ class webapp {
     command     => "su - ${webapp_user} -c \"cd ${app_root} && bundle exec rake db:create db:migrate db:seed app:generate_secret modules:setup modules:clear\"",
     unless      => "su - ${webapp_user} -c \"cd ${app_root} && test -d modules\"",
     logoutput   => "on_failure",
-    timeout     => 1800,
+    timeout     => 3600,
     require     => Exec["install webapp gems"]
   }
 
@@ -48,7 +48,7 @@ class webapp {
     environment => $rbenv_env,
     command     => "su - ${webapp_user} -c \"cd ${app_root} && bundle exec rake db:migrate assets:precompile\"",
     logoutput   => "on_failure",
-    timeout     => 600,
+    timeout     => 3600,
     require     => Exec["initialise app"]
   }
 
@@ -58,7 +58,7 @@ class webapp {
     command     => "su - ${webapp_user} -c \"gem install passenger\"",
     unless      => "su - ${webapp_user} -c \"gem list passenger -i\"",
     logoutput   => "on_failure",
-    timeout     => 600
+    timeout     => 3600
   }
 
   exec { "link passenger gem":
@@ -77,7 +77,7 @@ class webapp {
     unless      => "test -f /etc/apache2/passenger/buildout/apache2/mod_passenger.so",
     logoutput   => "on_failure",
     require     => Exec["link passenger gem"],
-    timeout     => 1800
+    timeout     => 3600
   }
 
   file { "/etc/apache2/conf-enabled/faims.conf":

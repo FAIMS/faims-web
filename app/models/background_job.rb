@@ -1,6 +1,7 @@
 class BackgroundJob < ActiveRecord::Base
   belongs_to :project_module
   belongs_to :project_exporter
+  belongs_to :project_processor
   belongs_to :delayed_job, :class_name => '::Delayed::Job'
   belongs_to :user
   has_one :project_module_exports

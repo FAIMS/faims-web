@@ -78,6 +78,7 @@ class ProjectModule < ActiveRecord::Base
   validates :key, :presence => true, :uniqueness => true
 
   has_many :project_module_exports
+  has_many :project_module_processes
   has_many :user_modules
   has_many :users, :through => :user_modules
   has_many :background_jobs
@@ -841,6 +842,19 @@ class ProjectModule < ActiveRecord::Base
     raise ProjectModuleException, 'Failed to export module.' unless success
   end
 
+  # Project processor helpers
+
+  def process_project_module(processor, action, input, download_dir, markup_file, project_process_id)
+    @project_process = ProjectModuleProcess.find(project_process_id)
+    input_json = File.open(File.join("/tmp","input_" + SecureRandom.uuid + ".json"),"w+")
+    input_json.write(input.to_json)
+    input_json.close
+
+    success = processor.process(get_path(:project_module_dir), action, input_json.path, download_dir, markup_file)
+
+    raise ProjectModuleException, 'Failed to run module processor.' unless success
+  end
+
   # static
 
   def self.project_modules_path
@@ -879,6 +893,15 @@ class ProjectModule < ActiveRecord::Base
         project_export.save
       end
       bj.job_type = 'Export Module'
+    elsif method_name == 'process_project_module'
+      args = YAML.load(job.handler).args
+      project_process = ProjectModuleProcess.where(:project_module_id => self, :processor => args[0].key, :options => args[2].to_json).first
+      if !project_process.blank?
+        project_process.background_job = bj
+        project_process.save
+      end
+      bj.job_type = 'Process Module'
+
     end
     bj.save
   end

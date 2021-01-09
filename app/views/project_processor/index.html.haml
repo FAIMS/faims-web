@@ -1,0 +1,29 @@
+- title "Processors"
+= breadcrumbs
+.well
+  = link_to "<i class='icon-upload'></i> Upload Processor".html_safe, new_project_processor_path, :class => "btn"
+.clear
+- if @project_processors
+  %table.table#project-processors
+    %tr
+      %th.span1 No.
+      %th.span2 Name
+      %th.span1 Version
+      - if @project_processors.select { |e| e.can_update? }.size > 0
+        %th.span1 Update
+      %th.span1 Uninstall
+    - index = 0
+    - for project_processor in @project_processors
+      - index = index + 1
+      %tr
+        %td.span1
+          = index.to_s + "."
+        %td.span2.project-processor-name
+          = project_processor.name
+        %td.span1.project-processor-version
+          = project_processor.version
+        - if project_processor.can_update?
+          %td.span1
+            = button_to "Update", update_project_processor_path(project_processor.key), method: :post, class: 'btn'
+        %td.span1
+          = button_to "Uninstall", delete_project_processor_path(project_processor.key), method: :post, confirm: "Are you sure you want to uninstall processor?", class: 'btn btn-danger'

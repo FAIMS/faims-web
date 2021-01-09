@@ -51,6 +51,12 @@ FaimsWeb::Application.routes.draw do
   get 'project_modules/:id/export_project_module/results', :to => 'project_modules#show_export_results', :as => 'show_export_results'
   get 'project_modules/:id/export_project_module/results/download_file', :to => 'project_modules#download_export_file', :as => 'download_export_file'
 
+  get 'project_modules/:id/process_project_module', :to => 'project_modules#process_project_module', :as => 'process_project_module'
+  post 'project_modules/:id/process_project_module', :to => 'project_modules#run_process_project_module', :as => 'run_process_project_module'
+  get 'project_modules/:id/check_process_status', :to => 'project_modules#check_process_status', :as => 'check_process_status'
+  get 'project_modules/:id/process_project_module/results', :to => 'project_modules#show_process_results', :as => 'show_process_results'
+  get 'project_modules/:id/process_project_module/results/download_file', :to => 'project_modules#download_process_file', :as => 'download_process_file'
+
   get 'project_modules/:id/download_attached_file', :to => 'project_modules#download_attached_file', :as => 'download_attached_file'
 
   # project module file
@@ -122,6 +128,14 @@ FaimsWeb::Application.routes.draw do
   #get 'project_exporter/:key', :to => 'project_exporter#show', :as => 'project_exporter'
   post 'project_exporter/:key/delete', :to => 'project_exporter#delete', :as => 'delete_project_exporter'
 
+  # project processors
+  get 'project_processors', :to => 'project_processor#index', :as => 'project_processors'
+  get 'project_processors/new', :to => 'project_processor#new', :as => 'new_project_processor'
+  post 'project_processors/new', :to => 'project_processor#create', :as => 'new_project_processor'
+  post 'project_processor/:key/update', :to => 'project_processor#update', :as => 'update_project_processor'
+  #get 'project_processor/:key', :to => 'project_processor#show', :as => 'project_processor'
+  post 'project_processor/:key/delete', :to => 'project_processor#delete', :as => 'delete_project_processor'
+
   # background jobs
   get 'jobs', :to => 'jobs#index', :as => 'jobs'
 
@@ -148,6 +162,9 @@ FaimsWeb::Application.routes.draw do
 
   get 'android/module/:key/signup', :to => 'android#user_signup', :as => 'android_user_signup'
   post 'android/module/:key/signup', :to => 'android#user_signup', :as => 'android_user_signup'
+
+  # forced sync
+  get 'android/module/:key/db_record_count', :to => 'android#db_record_count', :as => 'android_project_module_db_record_count'
 
   get 'thumbnail', :to => 'project_module_entity#thumbnail', :as => 'thumbnail'
 

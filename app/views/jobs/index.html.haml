@@ -15,20 +15,36 @@
       - for job in @jobs
         - if job.job_type == "Export Module"
           - export = ProjectModuleExport.where(:background_job_id => job.id).first
+          - if export.nil?
+            - next
+          - else
+            - exporter = ProjectExporter.find_by_key(export.exporter).name
+        - elsif job.job_type == "Process Module"
+          - export = ProjectModuleProcess.where(:background_job_id => job.id).first
+          - if export.nil?
+            - next
+          - else
+            - exporter = ProjectProcessor.find_by_key(export.processor).name unless export.blank?
         %tr
           %td.span1
             = job.id
           %td.span2
-            - if job.job_type == "Archive Module" || job.job_type == "Export Module"
+            - if ["Export Module","Process Module","Archive Module"].include? job.job_type
               %a{ :href => url_for(:controller => :project_modules, :action => :show, :id => job.project_module_id)}
                 = job.module_name
             - else
               = job.module_name
           %td.span4
             = job.job_type
-            - if job.job_type == "Export Module"
+            - if ["Export Module","Process Module"].include? job.job_type
               - if !export.blank?
-                = " using \"#{ProjectExporter.find_by_key(export.exporter).name}\""
+                = " using \"#{exporter}\""
+                - if job.job_type == 'Process Module'
+                  - if !export.action.blank?
+                    %br
+                    with action:
+                    = export.action
+                    %br
                 - options = JSON.parse(export.options)
                 - if !options.blank?
                   with options:
@@ -61,6 +77,12 @@
                 - if !export.blank?
                   %a{ :href => url_for(:controller => :project_modules, :action => :show_export_results, :id => job.project_module_id, :uuid => export.uuid, :code => 1)}
                     Exporter results
+                - else
+                  (outdated)
+              - elsif job.job_type == "Process Module"
+                - if !export.blank?
+                  %a{ :href => url_for(:controller => :project_modules, :action => :show_process_results, :id => job.project_module_id, :uuid => export.uuid, :code => 1)}
+                    Processor results
                 - else
                   (outdated)
           %td.span1

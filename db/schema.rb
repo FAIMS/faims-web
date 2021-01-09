@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160525033250) do
+ActiveRecord::Schema.define(:version => 20170912060902) do
 
   create_table "background_jobs", :force => true do |t|
     t.string   "status"
@@ -22,12 +22,14 @@ ActiveRecord::Schema.define(:version => 20160525033250) do
     t.string   "module_name"
     t.integer  "delayed_job_id"
     t.string   "failure_message"
-    t.datetime "created_at",          :null => false
-    t.datetime "updated_at",          :null => false
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+    t.integer  "project_processor_id"
   end
 
   add_index "background_jobs", ["project_exporter_id"], :name => "index_background_jobs_on_project_exporter_id"
   add_index "background_jobs", ["project_module_id"], :name => "index_background_jobs_on_project_module_id"
+  add_index "background_jobs", ["project_processor_id"], :name => "index_background_jobs_on_project_processor_id"
   add_index "background_jobs", ["user_id"], :name => "index_background_jobs_on_user_id"
 
   create_table "delayed_jobs", :force => true do |t|
@@ -67,6 +69,22 @@ ActiveRecord::Schema.define(:version => 20160525033250) do
   add_index "project_module_exports", ["exporter"], :name => "index_project_module_exports_on_exporter"
   add_index "project_module_exports", ["options"], :name => "index_project_module_exports_on_options"
   add_index "project_module_exports", ["project_module_id"], :name => "index_project_module_exports_on_project_module_id"
+
+  create_table "project_module_processes", :force => true do |t|
+    t.integer  "project_module_id"
+    t.string   "processor"
+    t.text     "options"
+    t.text     "action"
+    t.integer  "background_job_id"
+    t.text     "uuid"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  add_index "project_module_processes", ["background_job_id"], :name => "index_project_module_processes_on_background_job_id"
+  add_index "project_module_processes", ["options"], :name => "index_project_module_processes_on_options"
+  add_index "project_module_processes", ["processor"], :name => "index_project_module_processes_on_processor"
+  add_index "project_module_processes", ["project_module_id"], :name => "index_project_module_processes_on_project_module_id"
 
   create_table "project_modules", :force => true do |t|
     t.string   "name"

@@ -1,0 +1,64 @@
+-title 'Process Module'
+= breadcrumbs
+
+%input{:type => 'hidden', :value => check_process_status_path(@project_module), :id=> 'check-process'}
+
+= collection_select("select", "processor", @processors, :key, :name, {:prompt => "Please select a processor"})
+.well
+  - @processors.each do |processor|
+    - config = processor.get_config_json
+    %div.processor_interface{:id => processor.key}
+      %select{ :class => "select_action"}
+        %option{ :value => true}
+          Please select an action
+        - for action in config['actions']
+          %option{ :value => "#{processor.key}-#{action['id']}" }
+            = action["label"]
+    - config['actions'].each do |action|
+      %div.processor_action_interface{:id => "#{processor.key}-#{action['id']}"}
+        = form_for(:processor_interface, url: run_process_project_module_path, :method => :post, html: {id: "#{processor.key}-#{action['id']}"}) do |f|
+          = hidden_field_tag("processor_key", processor.key)
+          = hidden_field_tag("processor_action", action['id'])
+          - if !action["interface"].nil?
+            - action["interface"].each do |item|
+              - if item["type"] != "button"
+                = render_processor_interface_label(item, f)
+              = render_processor_interface_item(item, f)
+          - else
+            No interface to display for this action
+            %br
+          %br
+          = submit_tag action['label'], :class => action['class'], :id => "process_module_#{processor.key}-#{action['id']}"
+
+#loading.hidden.indicator
+  = image_tag "loading.gif"
+  %p
+    %span Processing Module
+
+
+:javascript
+
+  $(document).ready(function () {
+    $('.processor_interface').hide()
+    $('.processor_action_interface').hide()
+    $('#select_processor').find('option:first').first().prop('selected',true)
+    $('.select_action').find('option:first').first().prop('selected', true)
+  });
+
+  $('#select_processor').change(function() {
+    $('.processor_interface').hide()
+    $('.select_action').find('option:first').first().prop('selected', true)
+    $('.processor_action_interface').hide()
+    chosen = $('#select_processor').val()
+    if(chosen != "") {
+      $('#' + chosen).show()
+    }
+  });
+
+  $('.select_action').change(function() {
+    $('.processor_action_interface').hide()
+    chosen = $('.select_action').val()
+    if(chosen != "") {
+      $('#' + chosen).show()
+    }
+  });

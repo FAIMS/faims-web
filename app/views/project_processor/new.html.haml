@@ -1,0 +1,17 @@
+- title 'Upload Processor'
+= breadcrumbs
+= simple_form_for 'project_processor', :url => new_project_processor_path, :method => "post", :multipart => true do |f|
+  .well
+    %h3 Please select processor
+    .btn-group
+      = f.label :tarball, 'File format (tar.gz)'
+      = f.file_field :tarball
+      .clear
+      = f.submit "Upload", :class => "btn btn-inverse"
+
+  - if @project_processor and @project_processor.errors
+    .well
+      %ul
+        - @project_processor.errors.messages.each do |key, messages|
+          - messages.each do |message|
+            %li.form-attribute-error= message
