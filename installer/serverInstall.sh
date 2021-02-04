@@ -2,6 +2,13 @@
 
 set -e 
 
+if lsb_release -rs | grep -q 18.04 ; then 
+	echo "You're running 18.04, continuing... "
+else
+	echo "FAIMS 2.6 needs to be installed only on 18.04."
+	exit 1
+fi
+
 #if [ -a /var/lib/dpkg/lock ]; then
 #	echo "Something else is already using apt-get. Please wait for other things to install and try again. "
 #	exit 1;
