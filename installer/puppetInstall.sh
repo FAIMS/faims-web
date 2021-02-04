@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+set -euo pipefail
 
 if lsb_release -rs | grep -q 18.04 ; then 
     echo "You're running 18.04, continuing... "
@@ -24,15 +24,15 @@ sudo apt-get -y install git puppet=5.4.\* libreadline-dev software-properties-co
 
 # Install puppet modules
 if [ ! -d "$HOME/.puppet/modules/stdlib" ]; then
-    puppet module install puppetlabs-stdlib
+    puppet module --modulepath=$APP_ROOT/puppet/modules install puppetlabs-stdlib
 fi
 
 if [ ! -d "$HOME/.puppet/modules/apt" ]; then
-    puppet module install puppetlabs-apt
+    puppet module --modulepath=$APP_ROOT/puppet/modules install puppetlabs-apt
 fi
 
 if [ ! -d "$HOME/.puppet/modules/vcsrepo" ]; then
-    puppet module install puppetlabs-vcsrepo
+    puppet module --modulepath=$APP_ROOT/puppet/modules install puppetlabs-vcsrepo
 fi
 
 # Clone webapp
@@ -43,6 +43,7 @@ if [ ! -d "$APP_ROOT" ]; then
 fi
 
 if [ ! -h "/etc/puppet/hiera.yaml" ]; then
+    sudo rm -f /etc/puppet/hiera.yaml
     sudo ln -s $APP_ROOT/puppet/hiera.yaml /etc/puppet/hiera.yaml
 fi
 
@@ -75,3 +76,5 @@ popd
 
 # Restart services
 sudo puppet apply $APP_ROOT/puppet/restart.pp --modulepath=$APP_ROOT/puppet/modules:$HOME/.puppet/modules
+
+echo "FAIMS 2.6.4 Server install completed."
