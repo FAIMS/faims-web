@@ -1,6 +1,6 @@
 version: 5
 defaults:
-  datadir: /var/www/faims/puppet/data
+  - datadir: /var/www/faims/puppet/data
 hierarchy:
   - "os/%{facts.os.family}.yaml"
   - common
