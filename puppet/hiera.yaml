@@ -5,5 +5,5 @@ defaults:
 hierarchy:
   - name: "Other YAML hierarchy levels"
     paths:
-      - "os/%{facts.os.family}.yaml"
+      #- "os/%{facts.os.family}.yaml"
       - common.yaml
