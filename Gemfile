@@ -12,6 +12,11 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
+# https://github.com/rails/rails/issues/35144#issuecomment-705089207
+gem 'bigdecimal', '1.3.5'
+
+
+
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'haml'
