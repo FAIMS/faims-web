@@ -6,10 +6,10 @@ class webapp {
   require spatialite
   require imagemagick
 
-  $webapp_user = lookup("webapp_user")
-  $webapp_version = lookup("webapp_version")
-  $ruby_version = lookup("ruby_version")
-  $app_root = lookup("app_root")
+  $webapp_user = lookup("common::webapp_user")
+  $webapp_version = lookup("common::webapp_version")
+  $ruby_version = lookup("common::ruby_version")
+  $app_root = lookup("common::app_root")
   $exec_path = "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
   $rbenv_root = "/home/${webapp_user}/.rbenv"
   $rbenv_path = "${rbenv_root}/bin:${exec_path}"

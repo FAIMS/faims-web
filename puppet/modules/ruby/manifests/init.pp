@@ -1,8 +1,8 @@
 class ruby {
   require common
 
-  $webapp_user = hiera("webapp_user")
-  $ruby_version = hiera("ruby_version")
+  $webapp_user = lookup("common::webapp_user")
+  $ruby_version = lookup("common::ruby_version")
   $exec_path = "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
   $rbenv_root = "/home/${webapp_user}/.rbenv"
   $rbenv_path = "${rbenv_root}/bin:${exec_path}"
