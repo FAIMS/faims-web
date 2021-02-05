@@ -1,7 +1,9 @@
 version: 5
 defaults:
-  - datadir: /var/www/faims/puppet/data
+  datadir: /var/www/faims/puppet/data
+  data_hash: yaml_data
 hierarchy:
-  - "os/%{facts.os.family}.yaml"
-  - common
-logger: console
+  - name: "Other YAML hierarchy levels"
+    paths:
+      - "os/%{facts.os.family}.yaml"
+      - common
