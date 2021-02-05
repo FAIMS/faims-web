@@ -6,4 +6,4 @@ hierarchy:
   - name: "Other YAML hierarchy levels"
     paths:
       - "os/%{facts.os.family}.yaml"
-      - common
+      - common.yaml

@@ -22,42 +22,52 @@ sudo apt-get update
 # Install common packages
 sudo apt-get -y install git puppet=5.4.\* libreadline-dev software-properties-common
 
+echo "* Installing puppet modules"
 # Install puppet modules
 if [ ! -d "$HOME/.puppet/modules/stdlib" ]; then
+    echo -e "\tstdlib"
     puppet module --modulepath=$HOME/.puppet/modules/ install puppetlabs-stdlib
 fi
 
 if [ ! -d "$HOME/.puppet/modules/apt" ]; then
+    echo -e "\tapt"
     puppet module --modulepath=$HOME/.puppet/modules/ install puppetlabs-apt
 fi
 
 if [ ! -d "$HOME/.puppet/modules/vcsrepo" ]; then
+    echo -e "\tvcsrepo"
     puppet module --modulepath=$HOME/.puppet/modules/ install puppetlabs-vcsrepo
 fi
 
 # Clone webapp
 if [ ! -d "$APP_ROOT" ]; then
+    echo "* Cloning"
     sudo git clone https://github.com/FAIMS/faims-web.git -b $BRANCH $APP_ROOT
     sudo chown -R $USER:$USER $APP_ROOT
     cd $APP_ROOT && git checkout $BRANCH
 fi
 
 if [ ! -h "/etc/puppet/hiera.yaml" ]; then
+    echo "* Copying hiera"
     sudo rm -f /etc/puppet/hiera.yaml
     sudo ln -s $APP_ROOT/puppet/hiera.yaml /etc/puppet/hiera.yaml
 fi
 
+echo "* Sedding"
 # Configure puppet
 sed -i "s/webapp_user:.*/webapp_user: $USER/g" $APP_ROOT/puppet/data/common.yaml
 sed -i "s/app_tag:.*/app_tag: production/g" $APP_ROOT/puppet/data/common.yaml
 
 # Update repo
-sudo puppet apply $APP_ROOT/puppet/repo.pp --modulepath=$APP_ROOT/puppet/modules:$HOME/.puppet/modules
+echo "* updating repo"
+sudo puppet apply --verbose $APP_ROOT/puppet/repo.pp --modulepath=$APP_ROOT/puppet/modules:$HOME/.puppet/modules
 
 # Update server
-sudo puppet apply $APP_ROOT/puppet/update.pp --modulepath=$APP_ROOT/puppet/modules:$HOME/.puppet/modules
+echo "* updating server"
+sudo puppet apply --verbose $APP_ROOT/puppet/update.pp --modulepath=$APP_ROOT/puppet/modules:$HOME/.puppet/modules
 
 # Test for and patch ImageTragic
+echo "* ImageTragic"
 pushd $APP_ROOT/tools/imagemagick-poc
 ./test.sh
 case $? in
@@ -75,6 +85,7 @@ esac
 popd
 
 # Restart services
+echo "* restarting services"
 sudo puppet apply $APP_ROOT/puppet/restart.pp --modulepath=$APP_ROOT/puppet/modules:$HOME/.puppet/modules
 
-echo "FAIMS 2.6.4 Server install completed."
+echo "*** FAIMS 2.6.4 Server install completed. ***"
