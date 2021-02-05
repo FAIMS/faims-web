@@ -35,7 +35,7 @@ class imagemagick {
 			require => Exec["update imagemagick sources"]
 		}
 	} elsif $::lsbdistcodename == 'bionic' {
-		$imagemagick_packages = ["imagemagick","libmagickwand-dev","ffmpeg","libmagickcore-6.q16-3-extra","ghostscript","netpbm","autotrace","html2ps","ufraw-batch","dcraw","transfig","libbz2-1.0","curl"]
+		$imagemagick_packages = ["imagemagick","libmagickwand-dev","ffmpeg","libmagickcore-6.q16-3-extra","ghostscript","netpbm","html2ps","ufraw-batch","dcraw","transfig","libbz2-1.0","curl"]
 		exec { "update imagemagick sources":
 			path=> "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin",
 			command => '/bin/true',
