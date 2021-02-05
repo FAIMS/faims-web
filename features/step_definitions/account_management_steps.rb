@@ -1,6 +1,6 @@
 Given /^I have access requests$/ do |table|
   table.hashes.each do |hash|
-    FactoryGirl.create(:user, hash.merge(:status => 'U'))
+    FactoryBot.create(:user, hash.merge(:status => 'U'))
   end
 end
 
@@ -17,12 +17,12 @@ end
 
 Given /^I have roles$/ do |table|
   table.hashes.each do |hash|
-    FactoryGirl.create(:role, hash)
+    FactoryBot.create(:role, hash)
   end
 end
 
 And /^I have role "([^"]*)"$/ do |name|
-  FactoryGirl.create(:role, :name => name)
+  FactoryBot.create(:role, :name => name)
 end
 
 

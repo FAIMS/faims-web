@@ -1,29 +1,29 @@
 Given /^I have a user "([^"]*)"$/ do |email|
-  FactoryGirl.create(:user, :email => email, :password => "Pas$w0rd", :status => 'A')
+  FactoryBot.create(:user, :email => email, :password => "Pas$w0rd", :status => 'A')
 end
 
 Given /^I have a locked user "([^"]*)"$/ do |email|
-  FactoryGirl.create(:user, :email => email, :password => "Pas$w0rd", :status => 'A', :locked_at => Time.now - 30.minute, :failed_attempts => 3)
+  FactoryBot.create(:user, :email => email, :password => "Pas$w0rd", :status => 'A', :locked_at => Time.now - 30.minute, :failed_attempts => 3)
 end
 
 Given /^I have a deactivated user "([^"]*)"$/ do |email|
-  FactoryGirl.create(:user, :email => email, :password => "Pas$w0rd", :status => 'D')
+  FactoryBot.create(:user, :email => email, :password => "Pas$w0rd", :status => 'D')
 end
 
 Given /^I have a rejected as spam user "([^"]*)"$/ do |email|
-  FactoryGirl.create(:user, :email => email, :password => "Pas$w0rd", :status => 'R')
+  FactoryBot.create(:user, :email => email, :password => "Pas$w0rd", :status => 'R')
 end
 
 Given /^I have a pending approval user "([^"]*)"$/ do |email|
-  FactoryGirl.create(:user, :email => email, :password => "Pas$w0rd", :status => 'U')
+  FactoryBot.create(:user, :email => email, :password => "Pas$w0rd", :status => 'U')
 end
 
 Given /^I have a user "([^"]*)" with an expired lock$/ do |email|
-  FactoryGirl.create(:user, :email => email, :password => "Pas$w0rd", :status => 'A', :locked_at => Time.now - 1.hour - 1.second, :failed_attempts => 3)
+  FactoryBot.create(:user, :email => email, :password => "Pas$w0rd", :status => 'A', :locked_at => Time.now - 1.hour - 1.second, :failed_attempts => 3)
 end
 
 Given /^I have a user "([^"]*)" with role "([^"]*)"$/ do |email, role|
-  user = FactoryGirl.create(:user, :email => email, :password => "Pas$w0rd", :status => 'A')
+  user = FactoryBot.create(:user, :email => email, :password => "Pas$w0rd", :status => 'A')
   role = Role.where(:name => role).first
   user.role_id = role.id
   user.save!

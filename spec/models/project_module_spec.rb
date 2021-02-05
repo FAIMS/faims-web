@@ -25,11 +25,11 @@ describe ProjectModule do
     it { should allow_value('Module Test @Something').for(:name) }
 
     it 'project_module names should be unique' do
-      p1 = FactoryGirl.build(:project_module, :name => 'Module 1')
-      p2 = FactoryGirl.build(:project_module, :name => 'Module 2')
-      p3 = FactoryGirl.build(:project_module, :name => 'Module 1')
-      p4 = FactoryGirl.build(:project_module, :name => 'Module    1')
-      p5 = FactoryGirl.build(:project_module, :name => '    Module 1    ')
+      p1 = FactoryBot.build(:project_module, :name => 'Module 1')
+      p2 = FactoryBot.build(:project_module, :name => 'Module 2')
+      p3 = FactoryBot.build(:project_module, :name => 'Module 1')
+      p4 = FactoryBot.build(:project_module, :name => 'Module    1')
+      p5 = FactoryBot.build(:project_module, :name => '    Module 1    ')
       p1.save.should == true
       p2.save.should == true
       p3.save.should == true
@@ -41,8 +41,8 @@ describe ProjectModule do
 
     it 'project_module keys should be unique' do
       uuid = SecureRandom.uuid
-      p1 = FactoryGirl.build(:project_module, :key => uuid)
-      p2 = FactoryGirl.build(:project_module, :key => uuid)
+      p1 = FactoryBot.build(:project_module, :key => uuid)
+      p2 = FactoryBot.build(:project_module, :key => uuid)
       p1.save.should == true
       p2.save.should == false
     end
@@ -52,12 +52,12 @@ describe ProjectModule do
 
   describe 'Should order by name' do
     it do
-      p1 = FactoryGirl.create(:project_module, :name => 'b Module')
-      p2 = FactoryGirl.create(:project_module, :name => 'a Module')
-      p3 = FactoryGirl.create(:project_module, :name => 'c Module')
-      p4 = FactoryGirl.create(:project_module, :name => 'B Module')
-      p5 = FactoryGirl.create(:project_module, :name => 'A Module')
-      p6 = FactoryGirl.create(:project_module, :name => 'C Module')
+      p1 = FactoryBot.create(:project_module, :name => 'b Module')
+      p2 = FactoryBot.create(:project_module, :name => 'a Module')
+      p3 = FactoryBot.create(:project_module, :name => 'c Module')
+      p4 = FactoryBot.create(:project_module, :name => 'B Module')
+      p5 = FactoryBot.create(:project_module, :name => 'A Module')
+      p6 = FactoryBot.create(:project_module, :name => 'C Module')
       project_modules = ProjectModule.all
       project_modules.should == [p2, p5, p1, p4, p3, p6]
     end
@@ -66,8 +66,8 @@ describe ProjectModule do
   describe 'Scopes' do
 
     it 'should find created' do
-      p1 = FactoryGirl.create(:project_module)
-      p2 = FactoryGirl.create(:project_module)
+      p1 = FactoryBot.create(:project_module)
+      p2 = FactoryBot.create(:project_module)
       ProjectModule.all.to_set.should == [p1,p2].to_set
       p1.created = true
       p1.save
@@ -75,8 +75,8 @@ describe ProjectModule do
     end
 
     it 'should find deleted' do
-      p1 = FactoryGirl.create(:project_module)
-      p2 = FactoryGirl.create(:project_module)
+      p1 = FactoryBot.create(:project_module)
+      p2 = FactoryBot.create(:project_module)
       ProjectModule.all.to_set.should == [p1,p2].to_set
       p1.deleted = true
       p1.save
@@ -84,8 +84,8 @@ describe ProjectModule do
     end
 
     it 'should not find if deleted' do
-      p1 = FactoryGirl.create(:project_module)
-      p2 = FactoryGirl.create(:project_module)
+      p1 = FactoryBot.create(:project_module)
+      p2 = FactoryBot.create(:project_module)
       ProjectModule.all.to_set.should == [p1,p2].to_set
       p1.deleted = true
       p1.save
@@ -93,8 +93,8 @@ describe ProjectModule do
     end
 
     it 'should not find created if deleted' do
-      p1 = FactoryGirl.create(:project_module)
-      p2 = FactoryGirl.create(:project_module)
+      p1 = FactoryBot.create(:project_module)
+      p2 = FactoryBot.create(:project_module)
       ProjectModule.all.to_set.should == [p1,p2].to_set
       p1.created = true
       p1.deleted = true
