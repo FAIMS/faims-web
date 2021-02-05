@@ -15,6 +15,8 @@ end
 # https://github.com/rails/rails/issues/35144#issuecomment-705089207
 gem 'bigdecimal', '1.3.5'
 
+#https://stackoverflow.com/a/35893625
+gem 'rake', '< 11.0'
 
 
 gem 'jquery-rails'
