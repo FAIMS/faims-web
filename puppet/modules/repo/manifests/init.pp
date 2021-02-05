@@ -4,7 +4,6 @@ class repo {
   $webapp_user = lookup("common::webapp_user")
   $app_root = lookup("common::app_root")
   $app_source = lookup("common::app_source")
-  $app_tag = lookup("common::app_tag")
   $exec_path = "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
   
   
