@@ -4,6 +4,7 @@ class repo {
   $webapp_user = lookup("common::webapp_user")
   $app_root = lookup("common::app_root")
   $app_source = lookup("common::app_source")
+  $branch = lookup("common::branch")
   $exec_path = "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
   
   
@@ -11,6 +12,7 @@ class repo {
     ensure   => latest,
     provider => git,
     source   => $app_source,
+    revision => $branch,
     user     => $webapp_user,
   }
 
