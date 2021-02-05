@@ -18,7 +18,7 @@ class webapp {
   exec { "install bundler gem":
     path        => $rbenv_path,
     environment => $rbenv_env,
-    command     => "su - ${webapp_user} -c \"gem install bundler\"",
+    command     => "su - ${webapp_user} -c \"gem install bundler:1.17.2\"",
     unless      => "su - ${webapp_user} -c \"gem list bundler -i\"",
     logoutput   => "on_failure"
   }
