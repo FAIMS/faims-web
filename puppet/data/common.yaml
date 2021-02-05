@@ -2,4 +2,4 @@ common::webapp_user: faims
 common::webapp_version: production # development, qa, staging or production
 common::ruby_version: 2.6.6
 common::app_root: /var/www/faims
-common::app_source: https://github.com/FAIMS/faims-web
+common::app_source: git://github.com/FAIMS/faims-web.git
